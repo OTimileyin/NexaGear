@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <path d="M110 200l70-70"/>
+    <path d="M104 206l12 12 8-16" stroke-width="1.4"/>
+    <rect x="170" y="112" width="64" height="26" rx="6" transform="rotate(-45 170 112)"/>
+    <path d="M226 78l22-22" stroke-width="3"/>
+    <path d="M248 56l10 10" stroke="#2254A3"/>
+    <rect x="240" y="170" width="76" height="56" rx="4"/>
+    <path d="M250 180h56M250 192h56M250 204h56M250 216h56" stroke-width="1"/>
+    <path d="M260 170v56M280 170v56M300 170v56" stroke-width="1"/>
+    <circle cx="140" cy="222" r="18" stroke="#2254A3"/>
+    <path d="M132 214c8 4 10 10 16 14" stroke-width="1.2"/>
+  </g>
+  <text x="200" y="256" text-anchor="middle" font-family="monospace" font-size="11" fill="#2254A3">IRON · TIP SET · BRAID · BOARD</text>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-010</text>
+</svg>

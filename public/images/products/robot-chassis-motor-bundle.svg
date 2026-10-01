@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <path d="M140 100h120l24 30v46l-24 30H140l-24-30v-46z"/>
+    <circle cx="122" cy="153" r="26"/>
+    <circle cx="122" cy="153" r="12"/>
+    <circle cx="278" cy="153" r="26"/>
+    <circle cx="278" cy="153" r="12"/>
+    <circle cx="200" cy="206" r="10"/>
+    <rect x="172" y="122" width="56" height="30" rx="3"/>
+    <path d="M180 132h40M180 142h28" stroke-width="1.2"/>
+    <path d="M154 168h92M154 180h92" stroke-width="1.2"/>
+    <path d="M148 116l10 10M252 116l-10 10" stroke-width="1.2"/>
+  </g>
+  <g stroke="#2254A3" stroke-width="1">
+    <path d="M304 127h46"/><path d="M342 123l6 4-6 4"/>
+  </g>
+  <text x="352" y="119" text-anchor="end" font-family="monospace" font-size="11" fill="#2254A3">GEAR MOTORS</text>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-011</text>
+</svg>

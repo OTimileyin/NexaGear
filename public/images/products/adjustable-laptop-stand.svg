@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <path d="M110 220h180"/>
+    <path d="M130 220l90-110"/>
+    <path d="M138 214l-8 12"/>
+    <path d="M220 110l70 0 24 20"/>
+    <path d="M290 110l-4 96" stroke-width="1.4"/>
+    <path d="M170 168l-14 6 4-16" stroke="#2254A3"/>
+  </g>
+  <g stroke="#2254A3" stroke-width="1">
+    <path d="M318 130h34"/><path d="M346 126l6 4-6 4"/>
+  </g>
+  <text x="354" y="122" text-anchor="end" font-family="monospace" font-size="11" fill="#2254A3">EYE LEVEL</text>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-003</text>
+</svg>

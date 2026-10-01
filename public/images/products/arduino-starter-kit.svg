@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <rect x="96" y="92" width="180" height="116" rx="6"/>
+    <rect x="76" y="122" width="20" height="34" rx="3"/>
+    <rect x="132" y="116" width="52" height="36" rx="3"/>
+    <path d="M140 126h36M140 136h36M140 146h24" stroke-width="1.2"/>
+    <path d="M96 172h180M96 184h180" stroke-width="1.2"/>
+    <circle cx="252" cy="132" r="9"/>
+    <path d="M247 132h10M252 127v10" stroke-width="1.2"/>
+    <path d="M120 92V78M148 92V78M176 92V78M204 92V78M232 92V78M260 92V78" stroke-width="1.6" stroke="#2254A3"/>
+  </g>
+  <text x="186" y="232" text-anchor="middle" font-family="monospace" font-size="11" fill="#2254A3">OPEN-PLATABLE HEADER</text>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-008</text>
+</svg>

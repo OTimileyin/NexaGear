@@ -1,0 +1,135 @@
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+
+import { AddToCartButton } from "@/components/AddToCartButton";
+import { CatalogErrorState } from "@/components/CatalogState";
+import { formatMoney, inventoryLabel } from "@/lib/format";
+import { getProductBySlug } from "@/lib/catalog";
+
+export const revalidate = 60;
+
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const product = await getProductBySlug(slug);
+    if (!product) return { title: "Product" };
+    return {
+      title: product.name,
+      description: product.description,
+    };
+  } catch {
+    return { title: "Product" };
+  }
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
+
+  let product: Awaited<ReturnType<typeof getProductBySlug>>;
+  try {
+    product = await getProductBySlug(slug);
+  } catch {
+    return (
+      <div className="mx-auto max-w-5xl px-6 py-16">
+        <CatalogErrorState />
+      </div>
+    );
+  }
+
+  if (!product) notFound();
+
+  const status = inventoryLabel(product.inventoryStatus);
+
+  return (
+    <div className="mx-auto max-w-5xl px-6 py-10">
+      <nav aria-label="Breadcrumb" className="font-mono text-xs text-steel">
+        <Link href="/shop" className="hover:text-drafting">
+          SHOP
+        </Link>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">{product.sku}</span>
+      </nav>
+
+      <div className="mt-6 grid gap-10 lg:grid-cols-2">
+        {/* Annotated product image */}
+        <div>
+          <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-white">
+            {product.imageUrl ? (
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <div
+                className="flex h-full items-center justify-center font-mono text-xs text-steel"
+                aria-hidden="true"
+              >
+                NO IMAGE
+              </div>
+            )}
+          </div>
+
+          {/* drafting dimension rule that draws in */}
+          <div className="relative mt-3 h-4" aria-hidden="true">
+            <div className="animate-draw-rule absolute inset-x-0 top-1/2 h-px bg-drafting" />
+            <div className="absolute left-0 top-0 h-full w-px bg-drafting" />
+            <div className="absolute right-0 top-0 h-full w-px bg-drafting" />
+          </div>
+          <p className="mt-1 font-mono text-[11px] text-steel">
+            {product.sku} · {product.category.toUpperCase()} · REV 2026-10
+          </p>
+        </div>
+
+        {/* Spec sheet */}
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {product.name}
+          </h1>
+          <p className="mt-4 text-ink/80">{product.description}</p>
+
+          <dl className="mt-8 divide-y divide-steel/40 border-y border-steel/40 font-mono text-sm">
+            <div className="flex justify-between py-3">
+              <dt className="text-steel">Part no.</dt>
+              <dd>{product.sku}</dd>
+            </div>
+            <div className="flex justify-between py-3">
+              <dt className="text-steel">Category</dt>
+              <dd>{product.category}</dd>
+            </div>
+            <div className="flex justify-between py-3">
+              <dt className="text-steel">Availability</dt>
+              <dd className="flex items-center gap-2">
+                <span
+                  className={`inline-block size-2 rounded-full ${status.dotClass}`}
+                  aria-hidden="true"
+                />
+                {status.text}
+              </dd>
+            </div>
+            <div className="flex justify-between py-3">
+              <dt className="text-steel">Price</dt>
+              <dd className="text-signal">{formatMoney(product.price)}</dd>
+            </div>
+          </dl>
+
+          <AddToCartButton product={product} />
+
+          <p className="mt-2 font-mono text-xs text-steel">
+            Free delivery for this demo · priced from the catalogue record at
+            checkout
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

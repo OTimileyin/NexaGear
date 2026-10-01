@@ -1,0 +1,32 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env files — only .env.example may be committed
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+*.tsbuildinfo
+
+# workspace metadata
+.freebuff/
+
+# tests / tooling
+/coverage
+/playwright-report
+/test-results

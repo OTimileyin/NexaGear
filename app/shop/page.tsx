@@ -1,0 +1,47 @@
+import type { Metadata } from "next";
+
+import { CatalogErrorState, EmptyCatalogState } from "@/components/CatalogState";
+import { ProductGrid } from "@/components/ProductGrid";
+import { getProducts } from "@/lib/catalog";
+
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description:
+    "Browse the full NexaGear catalogue: developer setup, audio, connectivity, power, electronics, robotics, and prototyping gear.",
+};
+
+export default async function ShopPage() {
+  let products: Awaited<ReturnType<typeof getProducts>>;
+  try {
+    products = await getProducts();
+  } catch {
+    return (
+      <div className="mx-auto max-w-5xl px-6 py-16">
+        <CatalogErrorState />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <div className="flex items-baseline justify-between border-b border-ink/15 pb-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Shop</h1>
+        <span className="font-mono text-[11px] text-steel">
+          {products.length === 0
+            ? "00 PARTS"
+            : `${String(products.length).padStart(2, "0")} PARTS`}
+        </span>
+      </div>
+
+      <div className="mt-10">
+        {products.length === 0 ? (
+          <EmptyCatalogState />
+        ) : (
+          <ProductGrid products={products} />
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  /* "The Datasheet" palette — 6 tokens, no gradients (DESIGN_GUIDELINES.md)
+     steel & signal retuned 2026-10-01 for WCAG AA (see DECISION_LOG D14):
+     steel #5C646D = 5.4:1 on paper; signal #C4430F = 4.6:1 on paper,
+     5.1:1 with white text. */
+  --color-paper: #f6f3ec;
+  --color-ink: #1a1d21;
+  --color-drafting: #2254a3;
+  --color-signal: #c4430f;
+  --color-steel: #5c646d;
+  --color-stock: #2e7d4f;
+
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Visible focus everywhere (WCAG 2.2 AA) */
+:focus-visible {
+  outline: 2px solid var(--color-drafting);
+  outline-offset: 2px;
+}
+
+/* Drafting callout rule that draws itself in (opens/annotates — allowed motion) */
+@keyframes draw-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-draw-rule {
+  transform-origin: left;
+  animation: draw-rule 600ms ease-out both;
+}
+
+/* Motion explains opening/removing/confirming only — instant otherwise */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

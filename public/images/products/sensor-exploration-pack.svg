@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <rect x="90" y="96" width="66" height="44" rx="4"/>
+    <rect x="174" y="96" width="66" height="44" rx="4"/>
+    <rect x="258" y="96" width="66" height="44" rx="4"/>
+    <rect x="90" y="158" width="66" height="44" rx="4"/>
+    <rect x="174" y="158" width="66" height="44" rx="4"/>
+    <rect x="258" y="158" width="66" height="44" rx="4"/>
+    <circle cx="123" cy="118" r="8" stroke="#2254A3"/>
+    <path d="M196 110l14 8-14 8z" stroke="#2254A3"/>
+    <rect x="278" y="110" width="26" height="16" rx="2" stroke="#2254A3"/>
+    <path d="M104 176h38M104 186h38" stroke-width="1.2"/>
+    <path d="M188 172v18M200 172v18M212 172v18" stroke-width="1.6"/>
+    <path d="M274 174l10 10 10-10M274 192h32" stroke-width="1.4"/>
+    <path d="M104 130h38M188 130h38M272 130h38M104 196h38M188 196h38M272 196h38" stroke-width="1"/>
+  </g>
+  <text x="200" y="232" text-anchor="middle" font-family="monospace" font-size="11" fill="#2254A3">12 MODULES · PRINTED PINOUTS</text>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-009</text>
+</svg>

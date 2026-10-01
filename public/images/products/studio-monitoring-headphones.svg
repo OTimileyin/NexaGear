@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+  <rect width="400" height="300" fill="#F6F3EC"/>
+  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
+  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
+    <path d="M120 170v-20c0-44 36-80 80-80s80 36 80 80v20"/>
+    <rect x="98" y="160" width="44" height="70" rx="16"/>
+    <rect x="258" y="160" width="44" height="70" rx="16"/>
+    <path d="M106 176h28M106 194h28M266 176h28M266 194h28" stroke-width="1.2"/>
+    <path d="M142 168c14-8 30-12 58-12s44 4 58 12" stroke-width="1.2"/>
+    <path d="M302 214c0 24-18 40-46 44" stroke="#2254A3"/>
+  </g>
+  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-004</text>
+</svg>
