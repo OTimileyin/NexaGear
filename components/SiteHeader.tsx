@@ -2,8 +2,29 @@ import Link from "next/link";
 
 import { AuthSection } from "@/components/AuthSection";
 import { CartCount } from "@/components/CartCount";
+import { getCurrentUser } from "@/lib/auth";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export function SiteHeader() {
+/**
+ * Show the admin link only to accounts the *database* considers admin.
+ * This is a convenience, not a gate — /admin enforces the same check again
+ * through RLS, so hiding the link grants nothing.
+ */
+async function isAdmin(): Promise<boolean> {
+  try {
+    if (!(await getCurrentUser())) return false;
+    const supabase = await getSupabaseServerClient();
+    if (!supabase) return false;
+    const { data, error } = await supabase.rpc("is_admin");
+    return !error && data === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function SiteHeader() {
+  const admin = await isAdmin();
+
   return (
     <header className="border-b border-ink/15">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
@@ -25,6 +46,11 @@ export function SiteHeader() {
             Cart
             <CartCount />
           </Link>
+          {admin && (
+            <Link href="/admin" className="font-mono text-xs hover:text-drafting">
+              Admin
+            </Link>
+          )}
           <AuthSection />
         </nav>
       </div>

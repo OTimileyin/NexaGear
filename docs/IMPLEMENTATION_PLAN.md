@@ -39,6 +39,8 @@ Both blockers are **resolved**. Neither Supabase nor Clerk had a defect: a singl
 
 **Added after submission (2026-10-02, D22):** Paystack **test-mode** payments. `placeOrder` → `startPayment` → `/checkout/verify` re-verifies server-side and marks the order paid; the success page reads `payment_status` from the database so a hand-edited `?paid=1` cannot fake it. `migration 0005` adds the payment columns and widens the `authenticated` UPDATE grant to exactly the five columns the app writes — owner-scoped, no `service_role`. 13 new unit tests (49/49). **Live payment capture is `UNVERIFIED` until a `sk_test_` key is supplied.**
 
+**Read-only admin (2026-10-02, D23):** `/admin` shows order counts, revenue (paid only), order value and a filterable table. Access is authorised by Postgres RLS via `is_admin()`, not by the page. Promotion is a manual DBA step. **A privilege-escalation bug found during the build was fixed by migration `0007`** — `profiles.is_admin` had been writable by any signed-in user through a table-level UPDATE grant; it is now column-scoped and confirmed false via `has_column_privilege`. 11 new unit tests (suite **60/60**). Populated dashboard view is `UNVERIFIED` pending one signed-in load.
+
 **Still open (owner actions, not code):**
 - Confirmation emails fail with Mailgun **HTTP 403** — the project uses a free **sandbox** domain, which only delivers to explicitly authorised recipients. Add the recipient in Mailgun, then place an order to see it arrive. This is the one PRD §34 row still unverified.
 - Google sign-in on the deployed URL needs `https://nexagear.vercel.app` added to the Clerk instance's **Allowed origins** (a dev instance only trusts allow-listed origins).

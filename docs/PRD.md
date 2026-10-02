@@ -824,12 +824,7 @@ Mark draft or demo-specific limitations clearly where necessary.
 
 Unless HNG explicitly requires them, do not add:
 
-- payment gateway
-- Stripe
-- Paystack
-- Flutterwave
 - cryptocurrency payments
-- admin dashboard
 - real warehouse inventory
 - live shipping API
 - discount system
@@ -972,11 +967,19 @@ without fake states, hard-coded success, or exposed secrets.
 After the assignment is accepted, possible next phases include:
 
 - order history
-- payment integration
 - inventory management
 - admin catalogue management
 - product search
 - filters
+
+> **Amended 2026-10-02 (D22, D23).** Two items above were delivered after
+> submission at the owner's instruction and are no longer "next phases":
+> **payment integration** shipped as Paystack in **test mode only**, and a
+> **read-only admin dashboard** shipped at `/admin`. The admin page grants no
+> access of its own — read visibility is authorised by Postgres RLS via an
+> `is_admin()` policy, and promotion is a manual DBA step, never self-service.
+> Stripe, Flutterwave, crypto payments and admin *catalogue management* remain
+> out of scope.
 - wishlist
 - real shipping calculation
 - transactional email templates
