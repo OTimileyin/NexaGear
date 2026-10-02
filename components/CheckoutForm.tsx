@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 
-import { placeOrder } from "@/app/checkout/actions";
+import { placeOrder, startPayment } from "@/app/checkout/actions";
 import {
   hasFieldErrors,
   validateCheckoutFields,
@@ -81,8 +81,20 @@ export function CheckoutForm({
 
       if (result.ok) {
         clearCart();
+
+        // Hand off to Paystack. The order is already durable, so a payment
+        // failure never loses it — the success page states the real state.
+        const payment = await startPayment(result.orderId).catch(() => null);
+
+        if (payment?.ok) {
+          window.location.href = payment.authorizationUrl;
+          return; // leave the page; stay busy until navigation happens
+        }
+
         router.push(
-          `/order/success?order=${encodeURIComponent(result.orderId)}&email=${result.emailSent ? "sent" : "failed"}`,
+          `/order/success?order=${encodeURIComponent(result.orderId)}` +
+            `&email=${result.emailSent ? "sent" : "failed"}` +
+            `&paid=0&payment=${encodeURIComponent(payment?.code ?? "unavailable")}`,
         );
         return; // stay busy until navigation completes
       }
@@ -214,11 +226,11 @@ export function CheckoutForm({
           disabled={submitting}
           className="mt-2 w-full bg-signal px-6 py-3 text-sm font-semibold text-white hover:bg-signal/90 disabled:cursor-not-allowed disabled:bg-steel sm:w-auto"
         >
-          {submitting ? "Placing order…" : "Place order"}
+          {submitting ? "Placing order…" : `Pay ${formatMoney(subtotal)}`}
         </button>
 
         <p className="mt-3 font-mono text-[11px] text-steel">
-          NO PAYMENT IS TAKEN · THIS DEMO DOESN&apos;T PROCESS PAYMENTS
+          SECURE CHECKOUT VIA PAYSTACK · RUNS IN TEST MODE, NO REAL MONEY MOVES
         </p>
       </form>
 
@@ -256,7 +268,7 @@ export function CheckoutForm({
           </div>
         </dl>
         <p className="mt-3 font-mono text-[11px] text-steel">
-          TOTALS RECALCULATED FROM THE CATALOGUE WHEN YOU PLACE THE ORDER
+          TOTALS RECALCULATED FROM THE CATALOGUE BEFORE YOU&apos;RE CHARGED
         </p>
       </aside>
     </div>

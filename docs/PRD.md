@@ -274,7 +274,7 @@ pending
 confirmed
 ```
 
-No payment-provider states are required because online payment processing is outside the current assignment scope.
+No payment-provider states were required by the assignment brief. **Amended 2026-10-02 (DECISION_LOG D22):** online payment was later added at the owner's instruction via Paystack, in **test mode only**. `orders.payment_status` is now a first-class state — `unpaid` (default, and every pre-amendment order) · `paid` · `failed` · `not_configured`. Payment is verified server-side against Paystack's API and never trusted from the browser.
 
 ---
 
@@ -623,7 +623,7 @@ These properties must remain true:
 6. One checkout interaction should not create accidental duplicate orders.
 7. Products displayed as order items preserve historical name/price snapshots.
 8. Authentication state must be validated before creating an order for a user.
-9. No fake payment success state is shown because payment processing is not part of the MVP.
+9. No fake payment success state is shown. Payment is real Paystack **test-mode** processing added after the MVP (D22), so a paid state is only ever shown when Paystack's API has confirmed the transaction server-side and the amount matches the database total. With no key configured the store says so plainly and never implies money moved.
 
 ---
 

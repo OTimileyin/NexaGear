@@ -11,6 +11,7 @@ export const metadata = { title: "Order received" };
 interface OrderRow {
   id: string;
   status: string;
+  payment_status: string;
   subtotal: number | string;
   customer_name: string;
   customer_email: string;
@@ -52,9 +53,13 @@ function MissingOrder({ title, body }: { title: string; body: string }) {
 export default async function OrderSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string; email?: string }>;
+  searchParams: Promise<{
+    order?: string;
+    email?: string;
+    payment?: string;
+  }>;
 }) {
-  const { order: orderId, email } = await searchParams;
+  const { order: orderId, email, payment } = await searchParams;
   const user = await getCurrentUser();
 
   const signInNext = orderId
@@ -102,13 +107,18 @@ export default async function OrderSuccessPage({
   const subtotal = Number(row.subtotal);
   const created = new Date(row.created_at);
   const emailSent = email === "sent";
+  // The database is the source of truth, not the query string: a replayed or
+  // hand-edited ?paid=1 must never claim money was received.
+  const isPaid = row.payment_status === "paid";
+  const receiptSent = email === "receipt_sent";
+  const paymentFailure = payment && payment !== "unknown" ? payment : null;
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
       <div className="border-l-4 border-stock bg-white px-6 py-8">
         <p className="font-mono text-xs text-steel">ORDER RECEIVED · SAVED IN THE DATABASE</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          Thanks — your order is in.
+          {isPaid ? "Thanks — your order is paid." : "Thanks — your order is in."}
         </h1>
         <p className="mt-3 max-w-prose text-ink/80">
           Reference{" "}
@@ -165,10 +175,29 @@ export default async function OrderSuccessPage({
           <p className="text-ink/75">{row.shipping_address}</p>
         </div>
 
-        <p
+        <div
           aria-live="polite"
-          className="mt-6 border-l-4 border-drafting bg-paper px-4 py-3 text-sm"
+          className={`mt-6 border-l-4 bg-paper px-4 py-3 text-sm ${
+            isPaid ? "border-stock" : "border-drafting"
+          }`}
         >
+          <p className="font-medium">
+            {isPaid
+              ? `Payment received — ${formatMoney(subtotal)}`
+              : "Payment not yet completed"}
+          </p>
+          <p className="mt-1 text-ink/80">
+            {isPaid
+              ? receiptSent
+                ? `A receipt was sent to ${row.customer_email}.`
+                : `We couldn't send the receipt email, but your payment went through and the order is marked paid.`
+              : paymentFailure === "not_configured"
+                ? "This demo store isn't configured to take online payment yet. Your order is saved — payment can be arranged separately."
+                : "Your order is saved either way. If you closed the payment page, nothing is lost — contact the store to finish paying."}
+          </p>
+        </div>
+
+        <p aria-live="polite" className="mt-4 text-sm">
           {emailSent ? (
             <>
               A confirmation email was sent to{" "}
@@ -176,15 +205,15 @@ export default async function OrderSuccessPage({
             </>
           ) : (
             <>
-              Your order is saved. The confirmation email couldn&apos;t be sent
-              right now — the order itself is unaffected, and the failure is
-              logged on the server.
+              The order confirmation email couldn&apos;t be sent right now — the
+              order itself is unaffected, and the failure is logged on the
+              server.
             </>
           )}
         </p>
 
         <p className="mt-4 font-mono text-[11px] text-steel">
-          NO PAYMENT WAS TAKEN · THIS DEMO DOESN&apos;T PROCESS PAYMENTS
+          PAYMENTS RUN IN PAYSTACK TEST MODE · NO REAL MONEY MOVES
         </p>
       </div>
 

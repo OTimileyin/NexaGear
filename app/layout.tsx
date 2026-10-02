@@ -51,8 +51,8 @@ export default function RootLayout({
             <footer className="mt-16 border-t border-ink/15">
               <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel sm:flex-row sm:items-center sm:justify-between">
                 <p>
-                  NexaGear — HNG internship assignment demo. Not a real store; no
-                  payments are processed.
+                  NexaGear — HNG internship assignment demo. Payments run in
+                  Paystack test mode; no real money moves.
                 </p>
                 <p className="flex items-center gap-4 font-mono">
                   <Link href="/privacy" className="hover:text-drafting">

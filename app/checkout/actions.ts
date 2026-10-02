@@ -1,10 +1,13 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import { getCurrentUser } from "@/lib/auth";
 import {
   buildOrderItemsPayload,
   hasFieldErrors,
   isSendablePayload,
+  isUuid,
   validateCheckoutFields,
   type CheckoutFields,
 } from "@/lib/checkout";
@@ -12,6 +15,7 @@ import {
   sendOrderConfirmation,
   type ConfirmationOrder,
 } from "@/lib/mailgun";
+import { initializeTransaction } from "@/lib/paystack";
 import { ensureProfile } from "@/lib/profile";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -26,6 +30,151 @@ export type PlaceOrderErrorCode =
   | "product_issue"
   | "auth_verification"
   | "server_error";
+
+export type StartPaymentResult =
+  | { ok: true; authorizationUrl: string }
+  | {
+      ok: false;
+      code:
+        | "unauthenticated"
+        | "order_not_found"
+        | "already_paid"
+        | "not_configured"
+        | "server_error";
+      message: string;
+    };
+
+/**
+ * Paystack sends the customer back to this origin, so it must match where the
+ * order was actually placed. Prefer the live request host (localhost in dev,
+ * the Vercel domain in production) and fall back to the configured site URL.
+ */
+async function currentOrigin(): Promise<string> {
+  const headerList = await headers();
+  const host = headerList.get("host");
+  if (host) {
+    const proto =
+      headerList.get("x-forwarded-proto") ??
+      (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
+    return `${proto}://${host}`;
+  }
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
+    /\/$/,
+    "",
+  );
+}
+
+/**
+ * Starts a Paystack transaction for an order the caller already placed.
+ *
+ * The amount comes from `orders.subtotal`, which `create_order` computed from
+ * the products table — never from the browser. The row is read through the
+ * RLS-scoped client, so another user's order simply is not visible here.
+ */
+export async function startPayment(orderId: string): Promise<StartPaymentResult> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return {
+      ok: false,
+      code: "unauthenticated",
+      message: "Sign in with Google to pay for your order.",
+    };
+  }
+
+  if (!isUuid(orderId)) {
+    return {
+      ok: false,
+      code: "order_not_found",
+      message: "That order reference isn't valid.",
+    };
+  }
+
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) {
+    return {
+      ok: false,
+      code: "server_error",
+      message: "The store isn't configured. Try again later.",
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("id, subtotal, customer_email, payment_status")
+    .eq("id", orderId)
+    .maybeSingle();
+
+  if (error) {
+    console.error(`[paystack] could not load order ${orderId}:`, error.message);
+    return {
+      ok: false,
+      code: "server_error",
+      message: "We couldn't start the payment. Your order is saved — try again shortly.",
+    };
+  }
+
+  // RLS also hides other users' orders, which is the desired behaviour here.
+  if (!data) {
+    return {
+      ok: false,
+      code: "order_not_found",
+      message: "We couldn't find that order on your account.",
+    };
+  }
+
+  const row = data as {
+    id: string;
+    subtotal: number | string;
+    customer_email: string;
+    payment_status: string;
+  };
+
+  if (row.payment_status === "paid") {
+    return {
+      ok: false,
+      code: "already_paid",
+      message: "This order has already been paid for.",
+    };
+  }
+
+  const amount = Number(row.subtotal);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return {
+      ok: false,
+      code: "server_error",
+      message: "This order has no payable amount. Contact the store.",
+    };
+  }
+
+  const origin = await currentOrigin();
+  const result = await initializeTransaction({
+    reference: row.id,
+    email: row.customer_email,
+    amount,
+    callbackUrl: `${origin}/checkout/verify`,
+  });
+
+  if (result.ok) {
+    return { ok: true, authorizationUrl: result.authorizationUrl };
+  }
+
+  console.error(`[paystack] could not initialise payment for ${orderId}:`, result.reason);
+
+  if (result.reason === "not_configured" || result.reason === "live_key_rejected") {
+    return {
+      ok: false,
+      code: "not_configured",
+      message:
+        "This demo store isn't set up to take online payment yet. Your order is saved — payment can be arranged separately.",
+    };
+  }
+
+  return {
+    ok: false,
+    code: "server_error",
+    message: "We couldn't reach the payment provider. Your order is saved — try again shortly.",
+  };
+}
 
 interface PlaceOrderInput {
   clientRef: string;

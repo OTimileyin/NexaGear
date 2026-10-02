@@ -47,7 +47,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-semibold text-ink">What is not stored</h2>
           <ul className="mt-2 list-disc space-y-1 pl-5">
-            <li>Payment details — there are no payments; nothing is bought.</li>
+            <li>Card details — payment happens on Paystack&apos;s hosted page in test mode; no card data ever reaches NexaGear&apos;s servers or database.</li>
             <li>Analytics, advertising trackers, or marketing cookies — none exist.</li>
             <li>Data shared with third parties — none; no third-party embeds run.</li>
           </ul>

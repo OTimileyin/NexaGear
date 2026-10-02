@@ -50,9 +50,37 @@ export function buildConfirmationEmail(order: ConfirmationOrder): {
     `Subtotal: ${money(order.subtotal)}`,
     `Total: ${money(order.subtotal)}`,
     "",
-    "No payment was taken — NexaGear is an internship demo store.",
+    "Payment status: awaiting payment.",
+    "You'll get a second email the moment payment is confirmed.",
     "",
     "— NexaGear",
+  ].join("\n");
+
+  return { subject, text };
+}
+
+/** Pure builder — unit-tested. Sent only after Paystack verification. */
+export function buildPaymentReceiptEmail(order: ConfirmationOrder & {
+  paymentReference: string;
+}): { subject: string; text: string } {
+  const date = new Date(order.createdAt).toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  });
+
+  const subject = `NexaGear payment received — ${order.id.slice(0, 8)}`;
+  const text = [
+    `Hi ${order.customerName},`,
+    "",
+    "We've received your payment. Your order is paid and on its way.",
+    "",
+    `Reference: ${order.id}`,
+    `Payment reference: ${order.paymentReference}`,
+    `Date: ${date} (UTC)`,
+    `Amount paid: ${money(order.subtotal)}`,
+    "",
+    "Thank you — NexaGear",
   ].join("\n");
 
   return { subject, text };
@@ -66,6 +94,26 @@ export function buildConfirmationEmail(order: ConfirmationOrder): {
 export async function sendOrderConfirmation(
   order: ConfirmationOrder,
 ): Promise<MailgunResult> {
+  const { subject, text } = buildConfirmationEmail(order);
+  return deliver(order, subject, text);
+}
+
+/**
+ * Sent only after the Paystack transaction has been verified server-side.
+ * Never throws — a receipt failure must not undo a paid order (PRD §15).
+ */
+export async function sendPaymentReceipt(
+  order: ConfirmationOrder & { paymentReference: string },
+): Promise<MailgunResult> {
+  const { subject, text } = buildPaymentReceiptEmail(order);
+  return deliver(order, subject, text);
+}
+
+async function deliver(
+  order: ConfirmationOrder,
+  subject: string,
+  text: string,
+): Promise<MailgunResult> {
   const apiKey = process.env.MAILGUN_API_KEY;
   const domain = process.env.MAILGUN_DOMAIN;
   const from = process.env.MAILGUN_FROM_EMAIL;
@@ -73,8 +121,6 @@ export async function sendOrderConfirmation(
   if (!apiKey || !domain || !from) {
     return { sent: false, reason: "not_configured" };
   }
-
-  const { subject, text } = buildConfirmationEmail(order);
 
   try {
     const endpoint = `https://api.mailgun.net/v3/${domain}/messages`;

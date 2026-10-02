@@ -39,7 +39,7 @@ describe("buildConfirmationEmail (PRD §15 contents)", () => {
 
   it("includes a confirmation message and honest demo framing", () => {
     expect(text).toContain("received and saved");
-    expect(text).toContain("No payment was taken");
+    expect(text).toContain("Payment status: awaiting payment");
   });
 });
 

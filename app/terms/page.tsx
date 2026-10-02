@@ -18,10 +18,11 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold text-ink">This is a demo</h2>
           <p className="mt-2">
             NexaGear is a demonstration project built for the HNG Internship
-            Assignment 2. It is not a registered business, does not sell goods,
-            and does not process payments. Placing an order here creates a
-            record in a demo database and sends a confirmation email — nothing
-            is purchased and nothing ships.
+            Assignment 2. It is not a registered business and does not sell
+            goods. Payments run through Paystack in **test mode**: no real
+            money moves, no card details are stored, and nothing ships.
+            Placing an order creates a record in a demo database and sends a
+            confirmation email.
           </p>
         </section>
 
