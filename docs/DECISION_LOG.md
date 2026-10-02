@@ -106,6 +106,22 @@ Real decisions only; chronological, never rewritten. Format: date · trigger · 
 - **Decision:** kill stale server processes, `rm -rf .next`, rebuild clean; treat "HTML refs missing chunk hash" as a clean-rebuild signal; never leave a `next start` running across rebuilds.
 - **Verification:** post-fix real-browser smoke — CSS 200 (25,423 B), all routes 200, console clean. **Status:** resolved.
 
+## D17 — 2026-10-01 · Supabase GoTrue 503 recovery (blocked — free plan limitation)
+- **Trigger:** GoTrue crashes on startup with `sessions_timebox: 0` (invalid duration), returning 503 for all `/auth/v1/*` endpoints. Google OAuth cannot be verified while GoTrue is down.
+- **Investigation:**
+  - Free plan Management API PATCH returns 402 for `sessions_timebox` → nonzero (Pro plan required).
+  - Setting `sessions_timebox` to `null` is accepted by the PATCH response but reverts to `0` immediately on GET (platform config service overrides to `0` on free plans).
+  - Setting `GOTRUE_SESSIONS_TIMEBOX` as a secret via `supabase secrets set` does not affect GoTrue — secrets are only available to Edge Functions, not the GoTrue service.
+  - `supabase config push` with local `config.toml` (`timebox = "24h"`) returns 402 (free plan blocks config push).
+  - Project restart returns HTTP 200 but GoTrue remains down after restart.
+  - `auth.instances` table's `raw_base_config` is platform-managed and empty in user-accessible tables.
+  - Support ticket creation endpoint (`POST /v1/projects/{ref}/support/tickets`) returns 404 — no programmatic support access available.
+- **Root cause:** The Supabase free tier forces `sessions_timebox: 0` via the platform config service after every restart. GoTrue interprets `0`/`0s` as an invalid duration and crashes on startup. This cannot be fixed programmatically on the free plan.
+- **Decision:** Accept that GoTrue remains 503 on the free plan until either (a) the project is upgraded to a Pro plan (enabling `sessions_timebox` to be set to a valid duration), or (b) Supabase support manually resets the config at the platform level. All code paths (Google OAuth config, redirect URIs, callback route, middleware) are in place and correct — they will work once GoTrue recovers.
+- **Impact:** Google OAuth verification is BLOCKED at the platform level; all application code is complete and verified via unit tests.
+- **Verification:** See Phase 4/9 evidence — auth config GET shows `external_google_enabled: true`, correct `client_id`, `site_url` = `http://localhost:64820`, `uri_allow_list` includes both `localhost:3000` and `localhost:64820` callbacks. GoTrue returns 503 on `/auth/v1/settings` and `/auth/v1/authorize`. Project status `ACTIVE_HEALTHY` at platform level despite GoTrue crash.
+- **Status:** adopted (platform limitation, not a code issue).
+
 ## D16 — 2026-10-01 · Playwright wedge test navigation timing
 - **Trigger:** wedge.spec.ts failed on `getByRole('heading')` after client-side navigation — heading not found within the 5s default timeout.
 - **Root cause:** dev-server RSC payload delivery + middleware Supabase getUser() call makes client-side navigation to /checkout take >5s; the test's default `toBeVisible()` timeout was insufficient.

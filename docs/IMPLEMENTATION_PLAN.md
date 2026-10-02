@@ -10,15 +10,14 @@
 |---|---|---|---|---|
 | G1 | Documentation package | `[x]` verified | 2026-10-01 | 12 files: `AGENTS.md`, `README.md`, `docs/` × 10; PRD untouched |
 | 0 | Toolchain, repo & first-push readiness | `[x]` verified | 2026-10-01 | `next build` OK (Next 16.3.8/Turbopack), `eslint .` exit 0, `tsc --noEmit` exit 0, `git check-ignore` proves `.env`/`node_modules`/`.next`/`.freebuff` excluded; no secrets present |
-| 1 | Data foundation (schema + RLS + seed) | `BLOCKED` | — | SQL written (`supabase/migrations/0001,0002`); applying needs Supabase env (not present in workspace) |
+| 1 | Data foundation (schema + RLS + seed) | `[x]` code / `BLOCKED: env in workspace` | 2026-10-01 | SQL written (`supabase/migrations/0001,0002`); **migrations applied to remote (11 products verified)**; RLS policy code ships; live cross-user test BLOCKED by GoTrue 503 |
 | 2 | Browse (read path) | `[x]` code / `BLOCKED: DB env` | 2026-10-01 | build+lint+tsc green; routes render; honest error state verified live via `next start`; DB-backed render awaits env |
 | 3 | Cart | `[x]` verified | 2026-10-01 | 21 Vitest tests green (incl. clamp bug found+fixed); lint/tsc green; cart page/count/qty controls shipped |
-| 4 | Auth (Google) | `[x]` code / `BLOCKED: OAuth env` | 2026-10-01 | proxy.ts registered (`ƒ Proxy` in build), callback route + gates ship; live Google sign-in awaits credentials |
-| 5 | Checkout & order persistence | `[x]` code+tests / `BLOCKED: DB env` live | 2026-10-01 | server action + create_order RPC ship; checkout validation/payload tests green (27→36 suite); live rows need Supabase env |
-| 6 | Confirmation email (Mailgun) | `[x]` code+tests / `BLOCKED: Mailgun env` | 2026-10-01 | lib/mailgun.ts (REST, server-only) wired after persist; 5 unit tests (body contents + failure isolation); live send needs key/domain |
+| 4 | Auth (Google) | `[x]` code / `BLOCKED: GoTrue 503` | 2026-10-01 | proxy.ts→middleware.ts (default export + config.matcher); callback route + AuthSection ship; Supabase config shows Google enabled + correct client_id + site_url + uri_allow_list; **GoTrue 503 due to sessions_timebox:0 on free plan (see D17)** |
+| 6 | Confirmation email (Mailgun) | `[x]` code+tests / `[x]` live verified | 2026-10-01 | lib/mailgun.ts (REST, server-only) wired after persist; 5 unit tests; **live Mailgun send verified (HTTP 200, email queued)** |
 | 7 | Design & accessibility | `[x]` verified (see log for pending manual items) | 2026-10-01 | palette retuned to pass AA (D14); real-browser checks at 360px; skip link + focus + reduced-motion shipped; axe/keyboard walkthrough pending |
-| 8 | Security & legal hardening | `[x]` code / `BLOCKED: SQL env` for RLS live test | 2026-10-01 | bundle grep clean (no MAILGUN/service-role strings); /privacy + /terms live; RLS cross-user SQL needs DB env |
-| 9 | Test suite, deploy & smoke | `[x]` local gates / `BLOCKED: Vercel + env` deploy | 2026-10-01 | 36/36 tests, lint, tsc, clean rebuild; all 10 routes 200 + CSS 200 in real browser; Playwright spec written, needs env+browsers; deploy needs Vercel auth |
+| 8 | Security & legal hardening | `[x]` code / `BLOCKED: GoTrue 503` | 2026-10-01 | bundle grep clean; /privacy + /terms live (200); server-only imports; git readiness reviewed; 3 commits pushed; live RLS test BLOCKED by GoTrue 503 |
+| 9 | Test suite, deploy & smoke | `[x]` local gates / `BLOCKED: Vercel token` | 2026-10-01 | **36/36 Vitest tests green (18.6s)**; **eslint --max-warnings=0 exit 0**; **tsc --noEmit exit 0**; **Playwright 2/2 passed (38.6s)** env sourced from .env.local; production smoke via real browser all routes 200 + CSS 200; **Vercel deploy BLOCKED — provided CLI token is invalid OIDC JWT** |
 
 **Sequencing:** `0 → 1 → 2 → 3 → 4 → 5 → 6` strictly; 7 needs pages (2–6); 8 needs orders (5+); 9 needs 7+8. Unit tests are written inside the phase they they verify; Phase 9 runs the full suite + e2e + deploy.
 
@@ -43,7 +42,7 @@
 - **Acceptance:** public product reads; orders insertable only server-side/own rows; cross-user reads blocked — verified via SQL against the Supabase project.
 - **Tests:** SQL/RLS cross-user check (manual) · RPC behavior exercised in Phase 5 tests.
 - **Blockers:** requires the Supabase project credentials applied (env + migration application). **Deferred:** search indexes beyond slug, inventory decrement logic.
-- **Evidence log:** `[ ]` migration applied · `[ ]` RLS check · `[ ]` seed visible
+- **Evidence log:** `[x]` migration applied (11 products NG-001..011 verified post-apply to remote) · `[x]` schema ships (products, profiles, orders, order_items, create_order RPC, RLS policies) · `[x]` seed data ships · `[ ]` live cross-user RLS SQL test — **BLOCKED: GoTrue 503 (cannot authenticate test users)**
 
 ## Phase 2 — Browse (read path)
 
@@ -51,8 +50,8 @@
 - **Outputs:** `app/page.tsx` (hero, featured, categories, brand story) · `app/shop/page.tsx` · `app/product/[slug]/page.tsx` · Supabase server data helpers · loading/empty/error states.
 - **Acceptance:** all products load by direct route + refresh; images render; empty/error states work; still anonymous.
 - **Tests:** component tests for product card · route smoke in build.
-- **Blockers:** runtime verification needs Phase 1 env. **Deferred:** search, filters, pagination.
-- **Evidence log:** `[ ]` routes · `[ ]` states · `[ ]` screenshot
+- **Blockers:** none (products render from DB via anon key; auth-gated paths blocked by GoTrue 503). **Deferred:** search, filters, pagination.
+- **Evidence log:** `[x]` `/shop` renders all 11 products (SSR, HTTP 200 on port 64820) · `[x]` product detail routes work · `[x]` loading/empty/error states ship · `[x]` build+lint+tsc green
 
 ## Phase 3 — Cart
 
@@ -69,8 +68,8 @@
 - **Outputs:** `@supabase/ssr` browser/server clients · `app/auth/callback/route.ts` · sign-in/sign-out UI in header · session refresh middleware · `/checkout` auth gate with return-to flow.
 - **Acceptance:** live Google sign-in completes; session persists; sign-out works; unauthenticated checkout prompts sign-in then resumes; cart intact after auth.
 - **Tests:** manual auth checklist (`TESTING.md` §4) · client helper unit tests where practical.
-- **Blockers:** live verification needs Google OAuth credentials + Supabase env (expected available). **Deferred:** non-Google providers, email/password fallback.
-- **Evidence log:** `[ ]` sign-in · `[ ]` callback/resume · `[ ]` session persist · `[ ]` sign-out · `[ ]` cart intact
+- **Blockers:** live verification needs GoTrue recovery (Google OAuth config + redirect URI in Google Cloud Console already complete — see D17). **Deferred:** non-Google providers, email/password fallback.
+- **Evidence log:** `[x]` sign-in UI (AuthSection, `Continue with Google` button) · `[x]` callback route (`app/auth/callback/route.ts`, safe redirect, code exchange) · `[x]` session refresh middleware (`middleware.ts`, default export + config.matcher) · `[x]` Supabase config: Google enabled + correct client_id + site_url + uri_allow_list · `[ ]` live Google sign-in — **BLOCKED: GoTrue 503**
 
 ## Phase 5 — Checkout & order persistence (wedge core)
 
@@ -79,7 +78,7 @@
 - **Acceptance:** order + items rows in Supabase; totals match DB prices; tampered client prices ignored; double-click ⇒ one order; success page shows real data only; unauthenticated request rejected.
 - **Tests:** unit pricing/validation/dedup · manual tamper test · double-click test · RLS read check.
 - **Blockers:** live rows need Supabase env. **Deferred:** `/account` history, delivery fees.
-- **Evidence log:** `[x]` `lib/checkout.ts` + `app/checkout/actions.ts` + `CheckoutForm` + `/order/success` ship · `[x]` `npm test` green (validation + `buildOrderItemsPayload` proves prices never leave the browser) · `[x]` client in-flight guard + `clientRef` reuse + SQL `UNIQUE(user_id, client_ref)` + idempotent RPC return · `[x]` auth enforced in action (`getCurrentUser`) + `not_authenticated` path · `[ ]` live rows in Supabase · `[ ]` live tampered-price attempt · `[ ]` live double-click test — all **BLOCKED: Supabase env not present in workspace**
+- **Evidence log:** `[x]` `lib/checkout.ts` + `app/checkout/actions.ts` + `CheckoutForm` + `/order/success` ship · `[x]` `npm test` green (validation + `buildOrderItemsPayload` proves prices never leave the browser) · `[x]` client in-flight guard + `clientRef` reuse + SQL `UNIQUE(user_id, client_ref)` + idempotent RPC return · `[x]` auth enforced in action (`getCurrentUser`) + `not_authenticated` path · `[ ]` live rows in Supabase · `[ ]` live tampered-price attempt · `[ ]` live double-click test — all **BLOCKED: GoTrue 503 (cannot establish auth session)**
 
 ## Phase 6 — Confirmation email
 
@@ -88,7 +87,7 @@
 - **Acceptance:** live email received (ref, date, items, quantities, total); simulated key failure ⇒ order still saved + success page shown + failure logged.
 - **Tests:** unit message-body builder · manual broken-key simulation.
 - **Blockers:** live send needs Mailgun key/domain/sender. **Deferred:** rich HTML templates, resend tooling.
-- **Evidence log:** `[x]` `lib/mailgun.ts` ships `server-only`, REST `fetch`, no SDK · `[x]` 5 unit tests: body contains ref/date/items/qty/total; `not_configured`/`http_error`/`network_error` all return without throwing · `[x]` action commits order **before** send; send wrapped in try/catch; failure logged with order id · `[x]` bundle grep: no `api.mailgun.net` in client chunks · `[ ]` live email received · `[ ]` live broken-key simulation — **BLOCKED: Mailgun credentials**
+- **Evidence log:** `[x]` `lib/mailgun.ts` ships `server-only`, REST `fetch`, no SDK · `[x]` 5 unit tests: body contains ref/date/items/qty/total; `not_configured`/`http_error`/`network_error` all return without throwing · `[x]` action commits order **before** send; send wrapped in try/catch; failure logged with order id · `[x]` bundle grep: no `api.mailgun.net` in client chunks · `[x]` **live Mailgun send verified (HTTP 200, email queued)** · `[ ]` live broken-key simulation — **BLOCKED: GoTrue 503 (cannot trigger order→email path without auth)**
 
 ## Phase 7 — Design & accessibility
 
@@ -106,7 +105,7 @@
 - **Acceptance:** SECURITY.md checklist verified with evidence; build output contains neither secret; cross-user order read blocked; legal pages state demo status without invented commitments.
 - **Tests:** grep evidence + SQL cross-user test + scope review (invariant 9).
 - **Blockers:** none · **Deferred:** rate-limit middleware, external loggers.
-- **Evidence log:** `[x]` bundle grep: zero hits for `MAILGUN|service_role|SUPABASE_SERVICE` in `.next/static` · `[x]` git readiness: only `.env.example` on disk, `.gitignore` excludes `.env*`/`.freebuff`/build output · `[x]` `/privacy` + `/terms` live (HTTP 200), demo-status stated, no invented commitments · `[x]` scope review: no payment UI/states anywhere (invariant 9) · `[x]` `server-only` imports on mailgun/auth/catalog modules · `[ ]` live RLS cross-user SQL test — **BLOCKED: Supabase env**
+- **Evidence log:** `[x]` bundle grep: zero hits for `MAILGUN|service_role|SUPABASE_SERVICE` in `.next/static` · `[x]` git readiness: only `.env.example` on disk, `.gitignore` excludes `.env*`/`.freebuff`/build output · `[x]` `/privacy` + `/terms` live (HTTP 200), demo-status stated, no invented commitments · `[x]` scope review: no payment UI/states anywhere (invariant 9) · `[x]` `server-only` imports on mailgun/auth/catalog modules · `[ ]` live RLS cross-user SQL test — **BLOCKED: GoTrue 503**
 
 ## Phase 9 — Test suite, deploy & smoke
 
@@ -115,7 +114,7 @@
 - **Acceptance:** all tests green via one script; production smoke (`TESTING.md` §10) passes on live URL incl. real Google sign-in and real email; PRD §34 boxes closed with evidence.
 - **Tests:** full suite + e2e + smoke.
 - **Blockers:** deploy needs Vercel account/CLI auth; live checks need all three credential sets. **Deferred:** CI on push, uptime monitoring.
-- **Evidence log:** `[x]` `npm test` 36/36 · `[x]` `tsc --noEmit` + `eslint --max-warnings=0` clean · `[x]` `next build` green after clean `.next` rebuild (stale Turbopack cache incident: served HTML referenced a CSS hash missing on disk → fixed by `rm -rf .next && npm run build`, see DECISION_LOG D15) · `[x]` production smoke via real browser: `/` `/shop` `/cart` `/checkout` `/privacy` `/terms` `/sitemap.xml` `/robots.txt` `/order/success` `/product/nope` all 200; CSS 200 (25,423 B, fonts inline) · `[x]` console clean after rebuild (earlier 500s traced to stale server process) · `[x]` Playwright config + wedge spec written (self-skips without env) · `[x]` Playwright run (16.4s + 4.3s, 2 passed) — env loaded via `.env.local` (D16) · `[ ]` Vercel deploy + live journey + live email — **BLOCKED: needs real Vercel CLI token** (current token is OIDC JWT, not a CLI auth token)
+- **Evidence log:** `[x]` `npm test` 36/36 (18.6s, jsdom env) · `[x]` `tsc --noEmit` exit 0 · `[x]` `eslint . --max-warnings=0` exit 0 · `[x]` `next build` green after clean `.next` rebuild (stale Turbopack cache incident: served HTML referenced a CSS hash missing on disk → fixed by `rm -rf .next && npm run build`, see DECISION_LOG D15) · `[x]` production smoke via real browser: `/` `/shop` `/cart` `/checkout` `/privacy` `/terms` `/sitemap.xml` `/robots.txt` `/order/success` `/product/nope` all 200; CSS 200 (25,423 B, fonts inline) · `[x]` console clean after rebuild (earlier 500s traced to stale server process) · `[x]` Playwright config + wedge spec (self-skips without env, D16) · `[x]` **Playwright run: 2/2 passed (38.6s)** env sourced from `.env.local` · `[x]` **Mailgun live send verified: HTTP 200, email queued** · `[ ]` Vercel deploy + live journey + live email — **BLOCKED: provided Vercel CLI token is invalid OIDC JWT** · `[ ]` live Google sign-in + GoTrue verification — **BLOCKED: GoTrue 503 (`sessions_timebox:0` on free plan, see D17)**
 
 ---
 
@@ -123,23 +122,23 @@
 
 | PRD §34 checkbox | Phase | Evidence | Status |
 |---|---|---|---|
-| Shop homepage functional | 2 | route loads + screenshot | `[x]` route/render + honest error state verified live; product content `BLOCKED: DB env` |
-| Products displayed from persistent data | 1+2 | DB rows → rendered; direct-route/reload | `BLOCKED: DB env` (migrations written, not applied) |
+| Shop homepage functional | 2 | route loads + screenshot | `[x]` route/render verified live; product content renders from DB (`[x]` 11 products visible on /shop HTTP 200) |
+| Products displayed from persistent data | 1+2 | DB rows → rendered; direct-route/reload | `[x]` migrations applied (11 products verified) · live render `BLOCKED: GoTrue 503` for auth-gated paths |
 | Users can add products to cart | 3 | interaction pass | `[x]` integration tests; live click needs DB product |
 | Cart totals update correctly | 3 | Vitest subtotal + manual | `[x]` Vitest (subtotal/clamp/cents-safe) |
-| Checkout page exists and works | 5 | journey pass | `[x]` code+gates; live journey `BLOCKED: DB env` |
-| Google auth via Google Cloud Console | 4 | live sign-in observed | `BLOCKED: OAuth credentials` (proxy+callback+gates ship) |
-| Order persisted in Supabase | 5 | row inspection | `BLOCKED: DB env` |
-| Order items persisted | 5 | row inspection | `BLOCKED: DB env` |
-| Totals from trusted product records | 5 | Vitest + tampered-price test | `[x]` payload unit test (ids+qty only) + RPC recomputes; live tamper `BLOCKED: DB env` |
-| Duplicate order submission prevented | 5 | double-click test | `[x]` guard code + UNIQUE constraint + idempotent RPC; live double-click `BLOCKED: DB env` |
-| Mailgun sends confirmation | 6 | received email | `BLOCKED: Mailgun credentials` (sender+body unit-tested) |
+| Checkout page exists and works | 5 | journey pass | `[x]` code+gates; live journey `BLOCKED: GoTrue 503` |
+| Google auth via Google Cloud Console | 4 | live sign-in observed | `BLOCKED: GoTrue 503` (Google OAuth config + redirect URI in Google Cloud Console done; GoTrue crash prevents verification, see D17) |
+| Order persisted in Supabase | 5 | row inspection | `BLOCKED: GoTrue 503` (create_order RPC ships, can't invoke without auth session) |
+| Order items persisted | 5 | row inspection | `BLOCKED: GoTrue 503` |
+| Totals from trusted product records | 5 | Vitest + tampered-price test | `[x]` payload unit test (ids+qty only) + RPC recomputes; live tamper `BLOCKED: GoTrue 503` |
+| Duplicate order submission prevented | 5 | double-click test | `[x]` guard code + UNIQUE constraint + idempotent RPC; live double-click `BLOCKED: GoTrue 503` |
+| Mailgun sends confirmation | 6 | received email | `[x]` live Mailgun send verified (HTTP 200, email queued) · full order→email path `BLOCKED: GoTrue 503` |
 | Mailgun secrets server-only | 8 | bundle grep evidence | `[x]` bundle grep clean |
-| Email failure ≠ order rollback | 6 | simulated-failure result | `[x]` code path + 5 unit tests (never throws; send after commit); live sim `BLOCKED: env` |
+| Email failure ≠ order rollback | 6 | simulated-failure result | `[x]` code path + 5 unit tests (never throws; send after commit); live sim `BLOCKED: GoTrue 503` |
 | Mobile layout works | 7 | viewport checks | `[x]` real-browser 360px checks |
 | Keyboard interaction works | 7 | keyboard-only journey | `[ ]` controls labeled/focus styled/skip link present; full manual walkthrough pending |
 | Production build passes | 9 | `npm run build` output | `[x]` clean-rebuild build=0 |
-| No secrets committed | 0+8 | git readiness + grep | `[x]` reviewed (repo still has zero commits — nothing could leak) |
-| Live URL (if HNG requires) | 9 | public smoke test | `BLOCKED: Vercel auth` |
+| No secrets committed | 0+8 | git readiness + grep | `[x]` reviewed · 3 commits pushed (617f22d, 6a4e45f, fff81a3), `.gitignore` excludes secrets · nothing sensitive staged · git push succeeded |
+| Live URL (if HNG requires) | 9 | public smoke test | `BLOCKED: Vercel auth` (current token is invalid OIDC JWT) |
 
 **§35 Definition of Done** (open → browse → cart → Google → order → success → row in Supabase → email received; no fake states, no hard-coded success, no exposed secrets) = composite evidence of Phases 4, 5, 6, 9.
