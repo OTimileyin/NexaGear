@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@fontsource-variable/archivo";
@@ -37,33 +38,35 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col antialiased">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
-        >
-          Skip to main content
-        </a>
-        <CartProvider>
-          <SiteHeader />
-          <main id="main-content" className="flex-1">{children}</main>
-          <footer className="mt-16 border-t border-ink/15">
-            <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                NexaGear — HNG internship assignment demo. Not a real store; no
-                payments are processed.
-              </p>
-              <p className="flex items-center gap-4 font-mono">
-                <Link href="/privacy" className="hover:text-drafting">
-                  Privacy
-                </Link>
-                <Link href="/terms" className="hover:text-drafting">
-                  Terms
-                </Link>
-                <span>Free delivery · NG-2026</span>
-              </p>
-            </div>
-          </footer>
-        </CartProvider>
+        <ClerkProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+          >
+            Skip to main content
+          </a>
+          <CartProvider>
+            <SiteHeader />
+            <main id="main-content" className="flex-1">{children}</main>
+            <footer className="mt-16 border-t border-ink/15">
+              <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel sm:flex-row sm:items-center sm:justify-between">
+                <p>
+                  NexaGear — HNG internship assignment demo. Not a real store; no
+                  payments are processed.
+                </p>
+                <p className="flex items-center gap-4 font-mono">
+                  <Link href="/privacy" className="hover:text-drafting">
+                    Privacy
+                  </Link>
+                  <Link href="/terms" className="hover:text-drafting">
+                    Terms
+                  </Link>
+                  <span>Free delivery · NG-2026</span>
+                </p>
+              </div>
+            </footer>
+          </CartProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

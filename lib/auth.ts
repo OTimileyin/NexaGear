@@ -1,8 +1,9 @@
 import "server-only";
 
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { currentUser } from "@clerk/nextjs/server";
 
 export interface SessionUser {
+  /** Clerk user ID (text, e.g. "user_2abc…") — the Supabase RLS subject. */
   id: string;
   email: string;
   displayName: string | null;
@@ -10,26 +11,22 @@ export interface SessionUser {
 }
 
 /**
- * Reads the authenticated user from the request's session cookies.
+ * Reads the authenticated user from the Clerk session.
  * Returns null when unauthenticated — callers must gate on this
  * (never trust client-provided identity).
  */
 export async function getCurrentUser(): Promise<SessionUser | null> {
-  const supabase = await getSupabaseServerClient();
-  if (!supabase) return null;
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await currentUser();
   if (!user) return null;
 
   return {
     id: user.id,
-    email: user.email ?? "",
+    email: user.primaryEmailAddress?.emailAddress ?? "",
     displayName:
-      (user.user_metadata?.full_name as string | undefined) ??
-      (user.user_metadata?.name as string | undefined) ??
+      user.fullName ??
+      user.firstName ??
+      user.username ??
       null,
-    avatarUrl: (user.user_metadata?.avatar_url as string | undefined) ?? null,
+    avatarUrl: user.imageUrl ?? null,
   };
 }

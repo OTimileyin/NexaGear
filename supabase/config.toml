@@ -273,11 +273,15 @@ max_frequency = "5s"
 # 4152127777 = "123456"
 
 # Configure logged in session timeouts.
+# NOTE: auth sessions are Pro-plan-only on hosted Supabase. On our free plan the
+# platform forces 0s and rejects any push of these fields with HTTP 402 (D17).
+# They are left unset so config push can update other auth settings (e.g. the
+# Clerk third-party provider) without hitting the 402.
 [auth.sessions]
 # Force log out after the specified duration.
-timebox = "24h"
+# timebox = "24h"
 # Force log out if the user has been inactive longer than the specified duration.
-inactivity_timeout = "8h"
+# inactivity_timeout = "8h"
 
 # This hook runs before a new user is created and allows developers to reject the request based on the incoming user object.
 # [auth.hook.before_user_created]
@@ -365,10 +369,11 @@ enabled = false
 # user_pool_region = "us-east-1"
 
 # Use Clerk as a third-party provider alongside Supabase Auth.
+# Clerk is NexaGear's authentication provider (DECISION_LOG D18); Supabase
+# remains the database. The domain is the Clerk Frontend API domain.
 [auth.third_party.clerk]
-enabled = false
-# Obtain from https://clerk.com/setup/supabase
-# domain = "example.clerk.accounts.dev"
+enabled = true
+domain = "clear-clam-6319.clerk.accounts.dev"
 
 # OAuth server configuration
 [auth.oauth_server]

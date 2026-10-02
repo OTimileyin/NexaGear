@@ -166,15 +166,17 @@ Google authentication is mandatory.
 
 ## Recommended implementation
 
-Use **Supabase Auth with Google OAuth**, configured using Google OAuth credentials created in Google Cloud Console.
+Use **Clerk as the authentication provider with Google OAuth**, configured using Google OAuth credentials created in Google Cloud Console. Supabase remains the PostgreSQL database, authenticated with the Clerk session token via Clerk's first-party Supabase third-party-auth integration (not the legacy shared-JWT-template flow).
 
 This satisfies:
 
-- persistent PostgreSQL database
-- authentication/session management
-- Google OAuth integration
+- persistent PostgreSQL database (Supabase)
+- authentication/session management (Clerk)
+- Google OAuth integration (Google Cloud Console credentials, brokered through Clerk)
 
-while keeping the architecture smaller than introducing separate authentication infrastructure.
+> **Approved architecture change — 2026-10-02 (DECISION_LOG D18).** This section originally recommended Supabase Auth with Google OAuth. The project's Supabase GoTrue service became unavailable on the free plan (`sessions_timebox` 503; see D17) and could not be repaired without a plan change. The approved decision is to authenticate with **Clerk** while keeping **Supabase** as the database and keeping Google OAuth credentials in **Google Cloud Console**.
+
+> **Status note:** this is an approved architecture change, not yet a verified migration. Live Google sign-in through Clerk, the checkout wedge, and cross-user RLS isolation remain unverified until the migration checks pass (D18).
 
 ---
 

@@ -1,43 +1,25 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { useState } from "react";
 
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-
-const ERROR_COPY: Record<string, string> = {
-  missing_code: "The Google sign-in response was incomplete. Try again.",
-  exchange_failed: "Google sign-in couldn't be completed. Try again.",
-  not_configured: "Sign-in isn't configured yet. Server env vars are missing.",
-};
-
-/** Checkout gate shown to unauthenticated visitors (PRD §18). */
-export function SignInGate({
-  next,
-  authError,
-}: {
-  next: string;
-  authError?: string;
-}) {
+/**
+ * Checkout gate shown to unauthenticated visitors (PRD §18).
+ * Backed by Clerk; Google is the intended provider. The cart lives in this
+ * browser and is untouched by signing in.
+ */
+export function SignInGate({ next }: { next: string }) {
+  const { openSignIn } = useClerk();
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(
-    authError ? (ERROR_COPY[authError] ?? ERROR_COPY.exchange_failed) : null,
-  );
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleSignIn() {
-    const client = getSupabaseBrowserClient();
-    if (!client) {
-      setError("Sign-in isn't configured yet. Set the Supabase env vars and restart the app.");
-      return;
-    }
-    setPending(true);
+  function handleSignIn() {
     setError(null);
-    const { error: oauthError } = await client.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-      },
-    });
-    if (oauthError) {
+    setPending(true);
+    try {
+      // Resume the intended flow after authentication (PRD §18).
+      openSignIn({ forceRedirectUrl: next });
+    } catch {
       setError("Google sign-in couldn't start. Try again.");
       setPending(false);
     }

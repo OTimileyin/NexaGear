@@ -12,6 +12,7 @@ import {
   sendOrderConfirmation,
   type ConfirmationOrder,
 } from "@/lib/mailgun";
+import { ensureProfile } from "@/lib/profile";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type PlaceOrderResult =
@@ -23,6 +24,7 @@ export type PlaceOrderErrorCode =
   | "invalid_form"
   | "empty_cart"
   | "product_issue"
+  | "auth_verification"
   | "server_error";
 
 interface PlaceOrderInput {
@@ -55,6 +57,21 @@ function mapRpcError(message: string): PlaceOrderResult {
   if (message.includes("not_authenticated") || message.includes("profile_missing")) {
     return fail("unauthenticated", "Your session expired. Sign in with Google again to place the order.");
   }
+  // Supabase could not verify the Clerk session token — the Clerk third-party
+  // auth provider is missing/mismatched, or the key it presents is wrong. This
+  // is a store configuration fault, not the visitor's account, so say so rather
+  // than implying their order attempt was the problem.
+  if (
+    /suitable key|wrong key type|invalid jwt|jwse|invalid authentication credentials/i.test(
+      message,
+    )
+  ) {
+    console.error("[order] Supabase rejected the auth token:", message);
+    return fail(
+      "auth_verification",
+      "Your sign-in couldn't be verified by the store's database, so nothing was saved. This is a store configuration issue, not your account — try again later.",
+    );
+  }
   console.error("[order] create_order failed:", message);
   return fail(
     "server_error",
@@ -71,6 +88,13 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
   const user = await getCurrentUser();
   if (!user) {
     return fail("unauthenticated", "Sign in with Google to place your order.");
+  }
+
+  // Keep the profile (trusted email) in sync with the Clerk account before the
+  // RPC reads it. Idempotent and server-side only — no unsigned webhook surface.
+  const profile = await ensureProfile();
+  if (!profile.ok && profile.reason === "not_configured") {
+    return fail("server_error", "The store isn't configured. Try again later.");
   }
 
   const fieldErrors = validateCheckoutFields(input.fields);

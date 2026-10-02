@@ -4,16 +4,11 @@ import { getCurrentUser } from "@/lib/auth";
 
 export const metadata = { title: "Checkout" };
 
-export default async function CheckoutPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ auth_error?: string }>;
-}) {
+export default async function CheckoutPage() {
   const user = await getCurrentUser();
-  const { auth_error } = await searchParams;
 
   if (!user) {
-    return <SignInGate next="/checkout" authError={auth_error} />;
+    return <SignInGate next="/checkout" />;
   }
 
   return (

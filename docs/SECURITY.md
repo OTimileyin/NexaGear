@@ -4,11 +4,12 @@
 
 ## 1. Authentication
 
-- **Provider:** Supabase Auth with Google OAuth; OAuth client credentials created in Google Cloud Console.
-- Session stored in HTTP-only cookies via `@supabase/ssr` — never `localStorage`.
-- Callback route (`/auth/callback`) exchanges the OAuth code server-side; failure returns a clear retryable error.
-- Sign-out clears cookies server-side.
+- **Provider:** **Clerk** with Google OAuth (DECISION_LOG D18). Google credentials originate in Google Cloud Console; Supabase Auth (GoTrue) is no longer used.
+- Sessions are managed by Clerk and refreshed by `clerkMiddleware()` in `proxy.ts` (the Next.js 16 middleware convention). No session data is stored in `localStorage`.
+- There is **no app OAuth callback route** — Clerk completes the OAuth handshake and issues the session.
+- Sign-out clears the Clerk session.
 - Browsing never requires auth; `/checkout` (and order reads) do.
+- Supabase requests carry the Clerk session token (Clerk⇄Supabase third-party auth); RLS reads `auth.jwt()->>'sub'`. **This trust path is currently `BLOCKED BY EXTERNAL PROVIDER: Supabase, Clerk` (DECISION_LOG D19): PostgREST rejects the token during key resolution with HTTP 401 `PGRST301 "No suitable key or wrong key type"`, before any claim or RLS evaluation. Cross-user isolation is therefore designed and SQL-reviewed but not yet live-verified.**
 
 ## 2. Authorization
 
@@ -21,7 +22,7 @@
 | order_items | — | via owned order | **deny (RLS)** |
 | Mailgun send | **deny** (server action post-persist only) | — | — |
 
-RLS policies: `orders.user_id = auth.uid()` (select/insert); `order_items` restricted through `order_id` ownership; `products` public read, no public write; service-role key bypasses RLS and is used only in server modules.
+RLS policies: `orders.user_id = auth.jwt()->>'sub'` (select/insert); `order_items` restricted through `order_id` ownership; `products` public read, no public write. **No application code uses the `service_role` key** — every request runs as the caller's `anon`/`authenticated` role, so RLS is always in force; a `service_role` bypass is also an explicit do-not-attempt guardrail while D19 is open. **`auth.uid()` is deliberately not used** — it casts the `sub` claim to `uuid`, and Clerk user IDs are text.
 
 ## 3. Validation
 

@@ -8,8 +8,8 @@ Anything not listed requires a dependency-budget review (AGENTS.md §7) and a `D
 |---|---|---|---|
 | `next` | App framework: routing, server actions, build | MIT | Never swap frameworks — PRD-mandated |
 | `react`, `react-dom` | UI runtime | MIT | — |
-| `@supabase/supabase-js` | Supabase client (data + auth API) | Apache-2.0 | Never for service-role use in client code |
-| `@supabase/ssr` | Cookie-based session bridge for Next.js server/client | Apache-2.0 | Never store sessions in `localStorage` |
+| `@supabase/supabase-js` | Supabase client for the **data API only** (catalogue, orders) | Apache-2.0 | Never for service-role use in client code |
+| `@clerk/nextjs` | Authentication: sessions, Google OAuth, `clerkMiddleware()`, user/profile | MIT | Not a data client — Supabase remains the database |
 
 **Deliberately not used**
 

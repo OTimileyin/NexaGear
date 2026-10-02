@@ -1,70 +1,51 @@
 "use client";
 
+import { useClerk, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { useState } from "react";
 
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-
-/** Header auth: Continue with Google when signed out, account + sign-out when in. */
+/**
+ * Header auth: "Sign in" when signed out, account + sign-out when signed in.
+ * Backed by Clerk. Google remains the intended provider (configured on the
+ * Clerk instance as the Google SSO connection).
+ */
 export function AuthSection() {
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
+  const { isLoaded, isSignedIn, user } = useUser();
+  const { openSignIn, signOut } = useClerk();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const client = getSupabaseBrowserClient();
-    if (!client) return;
-
-    client.auth.getUser().then(({ data }) => {
-      if (data.user) setUser(data.user);
-    });
-
-    const {
-      data: { subscription },
-    } = client.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   async function handleSignIn() {
-    const client = getSupabaseBrowserClient();
-    if (!client) {
-      setError("Sign-in isn't configured yet.");
-      return;
-    }
-    setPending(true);
     setError(null);
-    const { error: oauthError } = await client.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(pathname)}`,
-      },
-    });
-    if (oauthError) {
+    setPending(true);
+    try {
+      // Return to the page the visitor was on once authenticated.
+      openSignIn({ forceRedirectUrl: pathname });
+    } catch {
       setError("Google sign-in couldn't start. Try again.");
       setPending(false);
     }
   }
 
   async function handleSignOut() {
-    const client = getSupabaseBrowserClient();
-    if (!client) return;
-    await client.auth.signOut();
-    setUser(null);
+    await signOut();
   }
 
-  if (user) {
+  if (!isLoaded) {
+    // Reserve the row height so the header doesn't jump while Clerk loads.
+    return <div className="h-9" aria-hidden="true" />;
+  }
+
+  if (isSignedIn) {
+    const email = user.primaryEmailAddress?.emailAddress ?? "";
     return (
       <div className="flex items-center gap-3">
         <span
           className="hidden max-w-[16ch] truncate font-mono text-xs text-steel sm:inline"
-          title={user.email ?? ""}
+          title={email}
         >
-          {user.email}
+          {email}
         </span>
         <button
           type="button"
