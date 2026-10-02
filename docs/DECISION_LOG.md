@@ -105,3 +105,12 @@ Real decisions only; chronological, never rewritten. Format: date · trigger · 
 - **Options:** debug manifest mismatch · disable cache · clean rebuild.
 - **Decision:** kill stale server processes, `rm -rf .next`, rebuild clean; treat "HTML refs missing chunk hash" as a clean-rebuild signal; never leave a `next start` running across rebuilds.
 - **Verification:** post-fix real-browser smoke — CSS 200 (25,423 B), all routes 200, console clean. **Status:** resolved.
+
+## D16 — 2026-10-01 · Playwright wedge test navigation timing
+- **Trigger:** wedge.spec.ts failed on `getByRole('heading')` after client-side navigation — heading not found within the 5s default timeout.
+- **Root cause:** dev-server RSC payload delivery + middleware Supabase getUser() call makes client-side navigation to /checkout take >5s; the test's default `toBeVisible()` timeout was insufficient.
+- **Options:** (a) increase default expect timeout globally · (b) add `await page.waitForURL(...)` after each `Link.click()` · (c) both.
+- **Decision:** (b) insert `page.waitForURL("**/route")` after each client-side navigation click, then assert visibility. Also fixed `.env.local` MAILGUN_FROM_EMAIL quoting (`>` was outside quotes) so `set -a; . ./.env.local` sources without shell-redirection errors.
+- **Reason:** `waitForURL` explicitly waits for navigation to settle before assertions, making tests deterministic regardless of dev-server speed; no global timeout inflation needed.
+- **Impact:** tests/e2e/wedge.spec.ts updated with 3 `waitForURL` calls (product → cart → checkout).
+- **Verification:** `npx playwright test` — 2 passed (16.4s wedge + 4.3s 404). **Status:** adopted.

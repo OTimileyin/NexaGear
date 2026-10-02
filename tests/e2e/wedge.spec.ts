@@ -34,6 +34,7 @@ test("wedge: browse → product → cart → checkout auth gate", async ({ page 
   const firstProduct = page.locator("article a").first();
   await expect(firstProduct).toBeVisible();
   await firstProduct.click();
+  await page.waitForURL("**/product/*");
 
   // Product detail with spec sheet
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -43,12 +44,14 @@ test("wedge: browse → product → cart → checkout auth gate", async ({ page 
   ).toBeVisible();
 
   // Cart shows the line and a subtotal
-  await page.getByRole("link", { name: "Cart" }).click();
+  await page.getByRole("link", { name: "Cart", exact: true }).click();
+  await page.waitForURL("**/cart");
   await expect(page.getByRole("heading", { name: "Cart" })).toBeVisible();
   await expect(page.getByText("Subtotal")).toBeVisible();
 
   // Checkout gate for signed-out visitor (PRD §18)
   await page.getByRole("link", { name: "Continue to checkout" }).click();
+  await page.waitForURL("**/checkout");
   await expect(
     page.getByRole("heading", { name: "Sign in to place your order" }),
   ).toBeVisible();
@@ -63,5 +66,5 @@ test("404 page routes back to the shop", async ({ page }) => {
     page.getByRole("heading", { name: "This page isn't in the catalogue" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Browse the catalogue" }).click();
-  await expect(page).toHaveURL(/\/shop$/);
+  await page.waitForURL("**/shop");
 });

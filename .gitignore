@@ -30,3 +30,6 @@ npm-debug.log*
 /coverage
 /playwright-report
 /test-results
+
+# supabase CLI temp
+/supabase/.temp/

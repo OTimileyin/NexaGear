@@ -27,8 +27,8 @@ export async function getSupabaseServerClient(): Promise<SupabaseClient | null> 
             cookieStore.set(name, value, options),
           );
         } catch {
-          // Called from a Server Component where cookies are read-only —
-          // proxy.ts performs the session refresh instead.
+        // Called from a Server Component where cookies are read-only —
+        // middleware.ts performs the session refresh instead.
         }
       },
     },
