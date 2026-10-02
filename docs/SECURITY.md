@@ -9,7 +9,7 @@
 - There is **no app OAuth callback route** — Clerk completes the OAuth handshake and issues the session.
 - Sign-out clears the Clerk session.
 - Browsing never requires auth; `/checkout` (and order reads) do.
-- Supabase requests carry the Clerk session token (Clerk⇄Supabase third-party auth); RLS reads `auth.jwt()->>'sub'`. **This trust path is currently `BLOCKED BY EXTERNAL PROVIDER: Supabase, Clerk` (DECISION_LOG D19): PostgREST rejects the token during key resolution with HTTP 401 `PGRST301 "No suitable key or wrong key type"`, before any claim or RLS evaluation. Cross-user isolation is therefore designed and SQL-reviewed but not yet live-verified.**
+- Supabase requests carry the Clerk session token (Clerk⇄Supabase third-party auth); RLS reads `auth.jwt()->>'sub'` under the `authenticated` role. **Verified live 2026-10-02 (DECISION_LOG D20): the provider is registered with the full `https://clear-clam-6319.clerk.accounts.dev` URL, one authenticated request returned HTTP 201, and the write passed the RLS `WITH CHECK (auth.jwt() ->> 'sub') = user_id`. The earlier `PGRST301` was an unregistered provider, not a vendor fault. Cross-user isolation remains designed and SQL-reviewed but not yet exercised with a second account.**
 
 ## 2. Authorization
 

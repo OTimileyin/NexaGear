@@ -33,3 +33,6 @@ npm-debug.log*
 
 # supabase CLI temp
 /supabase/.temp/
+
+.vercel
+.env*
