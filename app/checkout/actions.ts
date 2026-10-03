@@ -17,6 +17,8 @@ import {
 } from "@/lib/mailgun";
 import { initializeTransaction } from "@/lib/paystack";
 import { ensureProfile } from "@/lib/profile";
+import { enforceForRequest } from "@/lib/rate-limit";
+import { rateLimitMessage } from "@/lib/rate-limit-core";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type PlaceOrderResult =
@@ -29,6 +31,7 @@ export type PlaceOrderErrorCode =
   | "empty_cart"
   | "product_issue"
   | "auth_verification"
+  | "rate_limited"
   | "server_error";
 
 export type StartPaymentResult =
@@ -40,6 +43,7 @@ export type StartPaymentResult =
         | "order_not_found"
         | "already_paid"
         | "not_configured"
+        | "rate_limited"
         | "server_error";
       message: string;
     };
@@ -86,6 +90,15 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
       ok: false,
       code: "order_not_found",
       message: "That order reference isn't valid.",
+    };
+  }
+
+  const limit = await enforceForRequest("start-payment", user.id);
+  if (limit.limited) {
+    return {
+      ok: false,
+      code: "rate_limited",
+      message: rateLimitMessage(limit.retryAfterSeconds),
     };
   }
 
@@ -237,6 +250,14 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
   const user = await getCurrentUser();
   if (!user) {
     return fail("unauthenticated", "Sign in with Google to place your order.");
+  }
+
+  // Counted per signed-in account, before any work is done. This is abuse
+  // protection, not authorisation: create_order and RLS still decide what may
+  // actually be written.
+  const limit = await enforceForRequest("place-order", user.id);
+  if (limit.limited) {
+    return fail("rate_limited", rateLimitMessage(limit.retryAfterSeconds));
   }
 
   // Keep the profile (trusted email) in sync with the Clerk account before the

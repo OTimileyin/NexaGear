@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { isUuid } from "@/lib/checkout";
 import { sendPaymentReceipt } from "@/lib/mailgun";
 import { toKobo, verifyTransaction } from "@/lib/paystack";
+import { enforceForRequest } from "@/lib/rate-limit";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
@@ -29,6 +30,16 @@ export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.redirect(`${origin}/sign-in`);
+  }
+
+  // Counted against the signed-in purchaser. Without this the callback is a
+  // free, unauthenticated-shaped way to hammer Paystack's verify API.
+  const limit = await enforceForRequest("payment-verify", user.id);
+  if (limit.limited) {
+    console.warn(
+      `[paystack] rate limit hit for user ${user.id} on reference ${reference}`,
+    );
+    return back({ order: reference, paid: "0", payment: "unknown" });
   }
 
   const supabase = await getSupabaseServerClient();
