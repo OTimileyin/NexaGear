@@ -93,10 +93,14 @@ export async function GET(request: NextRequest) {
 
   const paidAt = verification.paidAt ?? new Date().toISOString();
 
+  // `status` is deliberately NOT written here. It is the fulfilment lifecycle
+  // (pending -> processing -> shipped -> delivered, migration 0008) and the
+  // authenticated role has no UPDATE grant on it at all — writing it would both
+  // fail the constraint and re-open the hole where a buyer advances their own
+  // order. Payment lives in payment_status/paid_at and nowhere else.
   const { error: updateError } = await supabase
     .from("orders")
     .update({
-      status: "paid",
       payment_status: "paid",
       payment_reference: verification.reference,
       paid_at: paidAt,

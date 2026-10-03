@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { AdminStatusControl } from "@/components/AdminStatusControl";
+import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { getCurrentUser } from "@/lib/auth";
 import {
   filterOrders,
@@ -14,13 +16,18 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 export const metadata = { title: "Admin" };
 
 /**
- * Read-only admin.
+ * Read-mostly admin.
  *
  * This page does not grant access — the database does. `is_admin()` is a
  * SECURITY DEFINER function used by the SELECT policies on `orders` and
  * `order_items` (migration 0006), so a non-admin session gets zero rows from
- * the Data API whether it arrives here or is crafted by hand. There is no
- * admin INSERT/UPDATE/DELETE policy, so an admin cannot alter data either.
+ * the Data API whether it arrives here or is crafted by hand.
+ *
+ * The single write action here advances fulfilment status, and even that is not
+ * this page's decision: `authenticated` has no UPDATE grant on `status`, so
+ * `set_order_status` (migration 0008) is the only route in — and it re-checks
+ * `is_admin()` plus the transition table itself. There is no INSERT/DELETE
+ * policy, so an admin can neither add nor remove orders.
  */
 export default async function AdminPage({
   searchParams,
@@ -53,7 +60,7 @@ export default async function AdminPage({
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "id, created_at, status, payment_status, subtotal, customer_name, customer_email, shipping_address, order_items(id)",
+      "id, created_at, status, status_changed_at, payment_status, subtotal, customer_name, customer_email, shipping_address, order_items(id)",
     )
     .limit(200);
 
@@ -102,7 +109,9 @@ export default async function AdminPage({
   return (
     <Shell title="Admin">
       <p className="font-mono text-[11px] text-steel">
-        READ-ONLY · ACCESS GRANTED BY DATABASE POLICY, NOT BY THIS PAGE
+        ACCESS GRANTED BY DATABASE POLICY, NOT BY THIS PAGE · STATUS ADVANCES
+        ONLY THROUGH set_order_status, WHICH RE-CHECKES ADMIN AND THE ALLOWED
+        STEPS
       </p>
 
       <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -130,6 +139,7 @@ export default async function AdminPage({
               <th scope="col" className="py-2">Customer</th>
               <th scope="col" className="py-2">Payment</th>
               <th scope="col" className="py-2">Status</th>
+              <th scope="col" className="py-2">Advance</th>
               <th scope="col" className="py-2 text-right">Items</th>
               <th scope="col" className="py-2 text-right">Total</th>
             </tr>
@@ -151,7 +161,12 @@ export default async function AdminPage({
                     {order.payment_status}
                   </Badge>
                 </td>
-                <td className="py-3 pr-3 font-mono text-xs">{order.status}</td>
+                <td className="py-3 pr-3">
+                  <OrderStatusBadge status={order.status} />
+                </td>
+                <td className="py-3 pr-3">
+                  <AdminStatusControl orderId={order.id} status={order.status} />
+                </td>
                 <td className="py-3 text-right font-mono">
                   {order.order_items?.length ?? 0}
                 </td>

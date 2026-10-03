@@ -7,6 +7,7 @@ export interface AdminOrderRow {
   id: string;
   created_at: string;
   status: string;
+  status_changed_at?: string | null;
   payment_status: string;
   subtotal: number | string;
   customer_name: string;

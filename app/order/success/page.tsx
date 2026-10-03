@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { SignInGate } from "@/components/SignInGate";
 import { getCurrentUser } from "@/lib/auth";
 import { formatMoney } from "@/lib/format";
@@ -128,6 +129,9 @@ export default async function OrderSuccessPage({
             timeStyle: "short",
           })}
         </p>
+        <p className="mt-2 text-sm">
+          Fulfillment: <OrderStatusBadge status={row.status} />
+        </p>
 
         <table className="mt-8 w-full border-collapse text-sm">
           <caption className="sr-only">Items in your order</caption>
@@ -218,6 +222,12 @@ export default async function OrderSuccessPage({
       </div>
 
       <div className="mt-8 flex flex-wrap gap-3">
+        <Link
+          href={`/order/track?order=${encodeURIComponent(row.id)}`}
+          className="border border-ink px-5 py-3 text-sm font-medium hover:bg-ink hover:text-paper"
+        >
+          Track this order
+        </Link>
         <Link
           href="/shop"
           className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"

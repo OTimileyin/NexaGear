@@ -11,12 +11,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * Intended: the token carries the Clerk user ID in `sub`, so RLS policies
  * evaluate against `auth.jwt()->>'sub'` under the `authenticated` role.
  *
- * CURRENTLY BLOCKED BY EXTERNAL PROVIDER (DECISION_LOG D19): Supabase rejects
- * this token during key resolution (HTTP 401 `PGRST301 "No suitable key or
- * wrong key type"`), and the token still lacks `role: "authenticated"`.
- * Every authenticated call therefore fails; see docs/IMPLEMENTATION_PLAN.md
- * "External blockers". Do not work around this with `service_role` or by
- * weakening RLS.
+ * Verified working 2026-10-02 (DECISION_LOG D20): the Clerk third-party auth
+ * provider is registered with Supabase, so tokens verify against the live JWKS
+ * and carry `role: "authenticated"`. The earlier `PGRST301 "No suitable key or
+ * wrong key type"` failures were caused by that provider never having been
+ * saved — not by a Supabase or Clerk defect. Never work around an auth failure
+ * here with `service_role` or by weakening RLS; fix the provider registration.
  *
  * Returns null when env is not configured — callers must fail honestly
  * (error state), never with fake data.

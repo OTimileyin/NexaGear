@@ -261,6 +261,14 @@ OrderItem
 - lineTotal
 ```
 
+> **Amended 2026-10-03 (DECISION_LOG D24).** `Order.status` is the **fulfilment
+> lifecycle** only: `pending → processing → shipped → delivered`, with
+> `cancelled` reachable from `pending` or `processing`. Steps cannot be skipped;
+> `shipped`, `delivered` and `cancelled` are terminal. Payment is a separate
+> column (`paymentStatus`, added by D22) — money received is not the same fact
+> as "your parcel is on its way", and the two used to be written to one column.
+> Added `statusChangedAt` so a customer can be told *when* an order last moved.
+
 Product name and price snapshots are stored so historical orders remain meaningful if catalogue data changes later.
 
 ---
@@ -980,6 +988,14 @@ After the assignment is accepted, possible next phases include:
 > `is_admin()` policy, and promotion is a manual DBA step, never self-service.
 > Stripe, Flutterwave, crypto payments and admin *catalogue management* remain
 > out of scope.
+>
+> **Amended 2026-10-03 (D24).** The admin dashboard is no longer strictly
+> read-only: it gained one write action, advancing order fulfilment status.
+> Catalogue management remains out of scope, and no admin INSERT or DELETE
+> policy exists — an admin can read every order and move one along, nothing
+> more. A customer-facing **order tracking page** (`/order/track`) shipped with
+> it, so **order history** from the list above is now partly delivered: a signed-in
+> customer can track an order they placed.
 - wishlist
 - real shipping calculation
 - transactional email templates
