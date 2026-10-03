@@ -98,6 +98,14 @@ begin
     update public.orders
        set subtotal = v_subtotal,
            status = r.status,
+           -- Migration 0010 requires a cancellation reason exactly when the
+           -- status is 'cancelled', and forbids one otherwise, so the two are
+           -- set together. NGX-1006's recorded payment_status is 'failed',
+           -- which is why its reason is 'payment_failed'.
+           cancellation_reason = case
+             when r.status = 'cancelled' then 'payment_failed'
+             else null
+           end,
            -- Orders that moved did so after they were placed; a pending or
            -- cancelled order has not moved at all.
            status_changed_at = case

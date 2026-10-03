@@ -284,6 +284,8 @@ confirmed
 
 No payment-provider states were required by the assignment brief. **Amended 2026-10-02 (DECISION_LOG D22):** online payment was later added at the owner's instruction via Paystack, in **test mode only**. `orders.payment_status` is now a first-class state — `unpaid` (default, and every pre-amendment order) · `paid` · `failed` · `not_configured`. Payment is verified server-side against Paystack's API and never trusted from the browser.
 
+**Amended 2026-10-03 (DECISION_LOG D24, D28):** `status` is now the **fulfilment lifecycle only** — `pending → processing → shipped → delivered`, plus `cancelled` from `pending`/`processing`. `shipped`, `delivered` and `cancelled` are terminal; there is no backwards path and no way to skip a step. Only an administrator may advance it, through the `set_order_status` database function, which re-checks the transition table. Every cancellation carries a **reason** from a controlled list (`out_of_stock` · `customer_request` · `payment_failed` · `address_unreachable` · `suspected_fraud`); the database requires one exactly when the status is `cancelled`, and forbids one otherwise.
+
 ---
 
 # 12. Checkout
