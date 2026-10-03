@@ -9,6 +9,9 @@ export interface AdminOrderRow {
   status: string;
   status_changed_at?: string | null;
   payment_status: string;
+  /** Fictional demo row (migration 0009). Never counted as business. */
+  is_sample?: boolean;
+  sample_ref?: string | null;
   subtotal: number | string;
   customer_name: string;
   customer_email: string;
@@ -20,6 +23,8 @@ export interface AdminSummary {
   orderCount: number;
   paidCount: number;
   unpaidCount: number;
+  /** Demo rows seen, excluded from every figure below. */
+  sampleCount: number;
   /** Money actually collected — only `payment_status = 'paid'` counts. */
   revenuePaid: number;
   /** Value of every order regardless of payment state. */
@@ -38,8 +43,18 @@ export function summariseOrders(rows: AdminOrderRow[]): AdminSummary {
   let orderValue = 0;
   let paidCount = 0;
   let unitsSold = 0;
+  let sampleCount = 0;
 
   for (const row of rows) {
+    // Sample rows are demo data. They are counted separately and excluded from
+    // revenue, order value, units sold and every average, so the dashboard can
+    // never imply the store took money it did not. `orderCount` therefore means
+    // "real orders", which is what an admin reading a revenue figure means.
+    if (row.is_sample) {
+      sampleCount += 1;
+      continue;
+    }
+
     const subtotal = toNumber(row.subtotal);
     orderValue += subtotal;
     if (row.payment_status === "paid") {
@@ -49,12 +64,13 @@ export function summariseOrders(rows: AdminOrderRow[]): AdminSummary {
     unitsSold += (row.order_items ?? []).length;
   }
 
-  const orderCount = rows.length;
+  const orderCount = rows.length - sampleCount;
 
   return {
     orderCount,
     paidCount,
     unpaidCount: orderCount - paidCount,
+    sampleCount,
     revenuePaid: round2(revenuePaid),
     orderValue: round2(orderValue),
     averageOrderValue: orderCount === 0 ? 0 : round2(orderValue / orderCount),

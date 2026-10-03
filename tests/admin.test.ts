@@ -20,6 +20,9 @@ const row = (over: Partial<AdminOrderRow> = {}): AdminOrderRow => ({
   ...over,
 });
 
+const sample = (over: Partial<AdminOrderRow> = {}): AdminOrderRow =>
+  row({ id: "s1", is_sample: true, sample_ref: "NGX-1001", ...over });
+
 describe("summariseOrders", () => {
   it("returns zeroes for no orders rather than NaN", () => {
     const s = summariseOrders([]);
@@ -27,6 +30,7 @@ describe("summariseOrders", () => {
       orderCount: 0,
       paidCount: 0,
       unpaidCount: 0,
+      sampleCount: 0,
       revenuePaid: 0,
       orderValue: 0,
       averageOrderValue: 0,
@@ -83,6 +87,40 @@ describe("summariseOrders", () => {
       row({ order_items: undefined }),
     ]);
     expect(s.unitsSold).toBe(2);
+  });
+});
+
+describe("sample data is never counted as business", () => {
+  it("excludes sample orders from revenue, value, counts and the average", () => {
+    const s = summariseOrders([
+      row({ id: "real", subtotal: 100, payment_status: "paid" }),
+      sample({ id: "demo", subtotal: 148, payment_status: "paid" }),
+      row({ id: "real2", subtotal: 200, payment_status: "unpaid" }),
+    ]);
+
+    expect(s.sampleCount).toBe(1);
+    expect(s.orderCount).toBe(2);
+    expect(s.paidCount).toBe(1);
+    expect(s.unpaidCount).toBe(1);
+    expect(s.revenuePaid).toBe(100);
+    expect(s.orderValue).toBe(300);
+    expect(s.averageOrderValue).toBe(150);
+  });
+
+  it("does not let a sample order inflate units sold", () => {
+    const s = summariseOrders([
+      row({ order_items: [{ id: "1" }] }),
+      sample({ order_items: [{ id: "2" }, { id: "3" }, { id: "4" }] }),
+    ]);
+    expect(s.unitsSold).toBe(1);
+  });
+
+  it("reports an average of 0 rather than NaN when every order is sample", () => {
+    const s = summariseOrders([sample({ subtotal: 148, payment_status: "paid" })]);
+    expect(s.orderCount).toBe(0);
+    expect(s.revenuePaid).toBe(0);
+    expect(s.averageOrderValue).toBe(0);
+    expect(s.sampleCount).toBe(1);
   });
 });
 

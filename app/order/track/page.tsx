@@ -5,7 +5,7 @@ import { SignInGate } from "@/components/SignInGate";
 import { getCurrentUser } from "@/lib/auth";
 import { isUuid } from "@/lib/checkout";
 import { formatMoney } from "@/lib/format";
-import { statusLabel, timelineIndex, timelineSteps } from "@/lib/orders";
+import { isSampleRef, statusLabel, timelineIndex, timelineSteps } from "@/lib/orders";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Track an order" };
@@ -19,6 +19,8 @@ interface TrackedOrder {
   shipping_address: string;
   created_at: string;
   status_changed_at: string | null;
+  is_sample: boolean;
+  sample_ref: string | null;
   order_items: {
     id: string;
     product_name_snapshot: string;
@@ -39,14 +41,16 @@ interface TrackedOrder {
 export default async function TrackOrderPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string }>;
+  searchParams: Promise<{ order?: string; ref?: string }>;
 }) {
-  const { order: orderId } = await searchParams;
+  const { order: orderId, ref } = await searchParams;
   const user = await getCurrentUser();
 
   const signInNext = orderId
     ? `/order/track?order=${encodeURIComponent(orderId)}`
-    : "/order/track";
+    : ref
+      ? `/order/track?ref=${encodeURIComponent(ref)}`
+      : "/order/track";
 
   if (!user) {
     return <SignInGate next={signInNext} />;
@@ -54,18 +58,31 @@ export default async function TrackOrderPage({
 
   const supabase = await getSupabaseServerClient();
 
-  const order =
-    supabase && orderId && isUuid(orderId)
+  const columns =
+    "id, status, payment_status, subtotal, customer_name, shipping_address, created_at, status_changed_at, is_sample, sample_ref, order_items(id, product_name_snapshot, quantity, line_total)";
+
+  // An order id addresses a real order the caller owns (or any order, if the
+  // caller is an admin); a sample reference addresses the fictional demo rows,
+  // which RLS makes readable to any signed-in visitor.
+  const order = supabase
+    ? orderId && isUuid(orderId)
       ? (
           await supabase
             .from("orders")
-            .select(
-              "id, status, payment_status, subtotal, customer_name, shipping_address, created_at, status_changed_at, order_items(id, product_name_snapshot, quantity, line_total)",
-            )
+            .select(columns)
             .eq("id", orderId)
             .maybeSingle()
         ).data
-      : null;
+      : ref && isSampleRef(ref)
+        ? (
+            await supabase
+              .from("orders")
+              .select(columns)
+              .eq("sample_ref", ref.toUpperCase())
+              .maybeSingle()
+          ).data
+        : null
+    : null;
 
   if (!order) {
     return (
@@ -113,12 +130,23 @@ export default async function TrackOrderPage({
         {statusLabel(row.status)}
       </h1>
       <p className="mt-2 font-mono text-sm text-ink/80">
-        Reference <span className="text-xs">{row.id}</span> · placed{" "}
+        Reference{" "}
+        <span className="text-xs">{row.sample_ref ?? row.id}</span> · placed{" "}
         {placed.toLocaleDateString("en-GB", {
           dateStyle: "medium",
           timeStyle: "short",
         })}
       </p>
+
+      {row.is_sample && (
+        <p className="mt-4 border-l-4 border-drafting bg-white px-4 py-3 text-sm">
+          <span className="font-mono text-[11px] text-steel">SAMPLE ORDER · NOT REAL</span>
+          <span className="mt-1 block text-ink/80">
+            This is invented demo data so the tracking page can be seen without
+            placing an order. The customer, address and totals are fictional.
+          </span>
+        </p>
+      )}
 
       {steps.length > 0 ? (
         <ol className="mt-8 space-y-0 border-l-2 border-steel/40">

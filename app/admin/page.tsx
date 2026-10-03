@@ -60,7 +60,7 @@ export default async function AdminPage({
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "id, created_at, status, status_changed_at, payment_status, subtotal, customer_name, customer_email, shipping_address, order_items(id)",
+      "id, created_at, status, status_changed_at, payment_status, is_sample, sample_ref, subtotal, customer_name, customer_email, shipping_address, order_items(id)",
     )
     .limit(200);
 
@@ -92,6 +92,12 @@ export default async function AdminPage({
   const summary = summariseOrders(rows);
   const visible = filterOrders(rows, active);
 
+  // Filter labels count what each tab actually lists — including sample rows,
+  // which are shown (badged) but excluded from the money figures above.
+  const allCount = rows.length;
+  const paidCount = filterOrders(rows, "paid").length;
+  const unpaidCount = filterOrders(rows, "unpaid").length;
+
   const filterLink = (value: AdminFilter, label: string) => (
     <Link
       href={value === "all" ? "/admin" : `/admin?filter=${value}`}
@@ -114,20 +120,21 @@ export default async function AdminPage({
         STEPS
       </p>
 
-      <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Orders" value={String(summary.orderCount)} />
+      <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <Stat label="Real orders" value={String(summary.orderCount)} />
+        <Stat label="Sample orders" value={String(summary.sampleCount)} />
         <Stat
           label="Paid orders"
           value={`${summary.paidCount} / ${summary.orderCount}`}
         />
         <Stat label="Revenue (paid)" value={formatMoney(summary.revenuePaid)} />
-        <Stat label="Order value (all)" value={formatMoney(summary.orderValue)} />
+        <Stat label="Order value (real)" value={formatMoney(summary.orderValue)} />
       </dl>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {filterLink("all", `All ${summary.orderCount}`)}
-        {filterLink("paid", `Paid ${summary.paidCount}`)}
-        {filterLink("unpaid", `Unpaid ${summary.unpaidCount}`)}
+        {filterLink("all", `All ${allCount}`)}
+        {filterLink("paid", `Paid ${paidCount}`)}
+        {filterLink("unpaid", `Unpaid ${unpaidCount}`)}
       </div>
 
       <div className="mt-6 overflow-x-auto">
@@ -153,8 +160,15 @@ export default async function AdminPage({
                 <td className="py-3 pr-3">
                   {order.customer_name}
                   <span className="block font-mono text-[11px] text-steel">
-                    {order.id.slice(0, 8)}
+                    {order.is_sample && order.sample_ref
+                      ? order.sample_ref
+                      : order.id.slice(0, 8)}
                   </span>
+                  {order.is_sample && (
+                    <span className="mt-1 inline-block border border-steel/50 px-1 font-mono text-[10px] text-steel">
+                      SAMPLE · EXCLUDED FROM TOTALS
+                    </span>
+                  )}
                 </td>
                 <td className="py-3 pr-3">
                   <Badge paid={order.payment_status === "paid"}>
@@ -186,8 +200,10 @@ export default async function AdminPage({
       )}
 
       <p className="mt-6 font-mono text-[11px] text-steel">
-        SHOWING THE MOST RECENT {rows.length} ORDERS · AVERAGE ORDER VALUE{" "}
-        {formatMoney(summary.averageOrderValue)}
+        SHOWING THE MOST RECENT {rows.length} ORDERS · AVERAGE REAL ORDER VALUE{" "}
+        {formatMoney(summary.averageOrderValue)} · {summary.sampleCount} SAMPLE
+        ORDER{summary.sampleCount === 1 ? "" : "S"} EXCLUDED FROM EVERY FIGURE
+        ABOVE
       </p>
     </Shell>
   );

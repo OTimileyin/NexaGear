@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { CatalogErrorState, EmptyCatalogState } from "@/components/CatalogState";
 import { ProductGrid } from "@/components/ProductGrid";
+import { SampleDataNotice } from "@/components/SampleDataNotice";
 import { getCategories, getFeaturedProducts } from "@/lib/catalog";
 
 export const revalidate = 60;
@@ -30,6 +31,10 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6">
+      <div className="pt-8">
+        <SampleDataNotice />
+      </div>
+
       {/* Hero */}
       <section className="border-b border-ink/15 py-16 sm:py-24">
         <p className="font-mono text-xs tracking-wide text-steel">
