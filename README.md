@@ -9,7 +9,7 @@ A modern shop for developer, electronics, robotics, and workspace gear with a si
 Browse products → add to cart → sign in with Google → checkout → the order is priced and persisted server-side → an order-confirmation email arrives via Mailgun.
 
 - Persistent catalogue and orders: **Supabase (PostgreSQL)**
-- Sign-in: **Google OAuth** (credentials via Google Cloud Console, through Supabase Auth)
+- Sign-in: **Google OAuth** via Clerk (credentials configured in Clerk and Google Cloud Console)
 - Confirmation email: **Mailgun** (server-side only)
 - Deployment: **Vercel**
 
@@ -78,3 +78,12 @@ Database schema and seed data live in `supabase/migrations/`.
 ## Notes
 
 This is a demonstration project for an internship assignment. It is not a registered commercial store; no payment processing occurs, and legal pages state their demo status plainly. Product names are original/generic seed concepts, not claims about real inventory or brands.
+
+## Engineering process
+
+Built with gODtECH FORGE — Framework for Orchestrated Reasoning, Governance & Engineering.
+
+FORGE governs this repository's engineering process: project context lives in
+`.forge/context/`, and `npm run verify` executes the gates declared in
+`.forge/verification/gates.json` so completion claims are backed by evidence.
+See [.forge/verification/PROJECT-GATES.md](.forge/verification/PROJECT-GATES.md).

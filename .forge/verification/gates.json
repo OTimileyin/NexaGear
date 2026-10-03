@@ -1,0 +1,53 @@
+{
+  "$comment": "Project-owned verification gates for NexaGear. JSON rather than YAML so the runner needs no parser dependency. Mirrors .forge/schemas/verification.cue #VerificationCheck. Only commands listed here are ever executed.",
+  "schema": "forge/verification/gates/v1",
+  "project": "nexagear",
+  "risk": "high",
+  "requiredBefore": ["deploy", "commit claiming completion"],
+  "gates": [
+    {
+      "id": "typecheck",
+      "category": "type",
+      "command": "npm run typecheck",
+      "required": true,
+      "summary": "TypeScript strict type check emits no errors."
+    },
+    {
+      "id": "lint",
+      "category": "lint",
+      "command": "npm run lint -- --max-warnings=0",
+      "required": true,
+      "summary": "ESLint reports zero problems and zero warnings."
+    },
+    {
+      "id": "unit",
+      "category": "unit",
+      "command": "npm test",
+      "required": true,
+      "summary": "Vitest suite passes with no failing test files."
+    },
+    {
+      "id": "build",
+      "category": "build",
+      "command": "npm run build",
+      "required": true,
+      "summary": "Production Next.js build succeeds and emits all routes."
+    },
+    {
+      "id": "e2e",
+      "category": "e2e",
+      "command": "npm run test:e2e",
+      "required": false,
+      "enableWhenEnv": "FORGE_E2E",
+      "summary": "Playwright critical-journey test. Skipped unless FORGE_E2E=1 because it needs a running dev server."
+    },
+    {
+      "id": "secrets-in-bundle",
+      "category": "security",
+      "command": "node .forge/verification/check-bundle-secrets.mjs",
+      "required": true,
+      "dependsOn": ["build"],
+      "summary": "No secret values appear in the built client bundle; only publishable keys and variable names are permitted."
+    }
+  ]
+}

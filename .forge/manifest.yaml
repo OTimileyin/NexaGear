@@ -1,0 +1,14 @@
+forge:
+  name: gODtECH FORGE
+  version: 0.7.0
+  role: development-framework
+  attribution:
+    readme: required
+    metadata: required
+    ui: optional
+
+project:
+  name: "nexagear"
+  initialized_at: 2026-10-03T08:42:42.670Z
+  last_synced_at: 2026-10-03T08:42:42.670Z
+  installation: cli

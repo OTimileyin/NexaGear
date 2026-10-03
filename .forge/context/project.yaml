@@ -1,0 +1,123 @@
+project:
+  name: "nexagear"
+  status: active
+
+product:
+  problem: "Developers, engineering students, electronics hobbyists and makers need a storefront for practical technical gear where checkout pricing and order confirmation are computed and stored reliably rather than approximated in the browser."
+  users:
+    - "software developers"
+    - "engineering and technology students"
+    - "electronics hobbyists"
+    - "robotics learners"
+    - "makers"
+    - "remote workers"
+    - "technology enthusiasts"
+  value_proposition: "Browse technical gear, sign in with Google, and receive an order priced server-side from database records, persisted to Postgres, with a Mailgun confirmation email and order-status tracking."
+  goals:
+    - "Browse the catalogue, add items to a cart, and authenticate with Google"
+    - "Persist every order permanently in Postgres with line items"
+    - "Send a Mailgun order-confirmation email for each placed order"
+    - "Let a customer look up an order and see its fulfilment status"
+  non_goals:
+    - "Not a registered commercial store; it is an internship assignment demonstration"
+    - "No real payment processing; checkout stops at simulated settlement"
+    - "No inventory management, discounting, or fulfilment logistics"
+
+market:
+  geography: ""
+  segment: "Developers, engineering and technology students, electronics hobbyists, robotics learners, makers, remote workers, and technology enthusiasts."
+  competitors: []
+  differentiation: ""
+  evidence:
+    - "docs/PRD.md sections 1-5 are the approved product source of truth"
+
+experience:
+  platforms:
+    - "responsive web (mobile, tablet, desktop)"
+  ux_priorities:
+    - "clear and reliable checkout flow"
+    - "explicit loading, empty, and error states on every fetch"
+    - "honest failure messaging that states what happened and what to do next"
+    - "no invented testimonials, ratings, or stock claims"
+  ui_direction: "Technical, modern, deliberate, and product-focused; must not read as a generic AI-generated storefront. WCAG 2.2 AA is the accessibility bar."
+  accessibility_requirements:
+    - "WCAG 2.2 AA: labelled inputs, visible focus, keyboard-operable controls"
+    - "semantic heading order and a page-level h1 on every route"
+    - "reduced-motion support"
+
+technical:
+  architecture: "Next.js 16 App Router with proxy.ts; server components by default"
+  stack:
+    - "Next.js 16 (App Router, proxy.ts)"
+    - "React 19"
+    - "TypeScript (strict)"
+    - "Tailwind CSS 4"
+    - "Supabase (Postgres, Auth, RLS)"
+    - "Vitest + React Testing Library"
+    - "Playwright"
+  integrations:
+    - "Clerk (Google OAuth authentication)"
+    - "Supabase Postgres via @supabase/supabase-js"
+    - "Mailgun REST API (server-side confirmation email)"
+    - "Paystack (test-mode payment callback, inert until a key is configured)"
+    - "Upstash Redis REST (rate limiting, fails open, inert until configured)"
+    - "Vercel (hosting, auto-deploy from main)"
+  constraints:
+    - "Tailwind CSS only; no CSS Modules, styled-components, or inline style libraries"
+    - "Prices and totals are computed server-side from database records; never trust a client-supplied amount"
+    - "Cart is React context + localStorage; no state library"
+    - "Server-only modules import server-only; secrets are never NEXT_PUBLIC_*"
+    - "Dev server runs on port 64820"
+
+security:
+  risk_level: high
+  sensitive_data:
+    - "customer email addresses"
+    - "customer shipping address and phone"
+    - "order and order-line records"
+    - "authentication tokens and provider session data"
+  compliance_requirements:
+    - "Row Level Security on every user-owned table; cross-user isolation is the control"
+    - "One admin-only write path for order status (SECURITY DEFINER function)"
+    - "Secrets server-side only; no secret values may reach the client bundle"
+
+operations:
+  deployment_target: "Vercel (Git-connected to main, auto-deploy)"
+  environments:
+    - "local development (Next.js dev server on port 64820)"
+    - "Vercel deployment connected to main"
+  observability_requirements:
+    - "structured server-side log lines tagged [order], [paystack], [mailgun]"
+    - "every provider call must have an observable success or failure path in the dev log"
+
+branding:
+  product_identity: "NexaGear"
+  forge_provenance:
+    readme: required
+    metadata: required
+    ui: optional
+    wording: "Built with gODtECH FORGE — Framework for Orchestrated Reasoning, Governance & Engineering."
+
+forge:
+  active_modules:
+    - "product"
+    - "architecture"
+    - "engineering"
+    - "security"
+    - "quality"
+    - "operations"
+    - "git-delivery"
+    - "verification"
+    - "efficiency"
+  open_questions:
+    - "PAYSTACK_SECRET_KEY is not configured; the settlement path is inert"
+    - "UPSTASH_REDIS_REST_URL/TOKEN are not configured; rate limiting fails open"
+    - "Mailgun authorized recipient is not approved; sending returns 403 on the sandbox domain"
+    - "Clerk allowed origins must include https://nexagear.vercel.app or live Google sign-in fails"
+    - "NEXT_PUBLIC_SITE_URL must be set in Vercel or canonicals and the sitemap advertise localhost"
+    - "Cross-user RLS isolation is still UNVERIFIED; it needs a second Clerk account"
+  material_risks:
+    - "Supabase legacy JWT secret, sb_secret_ key, service_role JWT key, Clerk secret key, and the Vercel token were exposed and must be rotated"
+    - "FORGE risk classification is keyword-based: 'Rotate a leaked API key' classifies as medium risk with no approval gate, so security work must be gated by AGENTS.md rather than by FORGE"
+    - "Six commits are unpushed; live routes /admin, /order/track and sample data are absent from the deployment until pushed"
+  last_updated: 2026-10-03

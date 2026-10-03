@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "verify": "node .forge/verification/run-gates.mjs",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
   },
