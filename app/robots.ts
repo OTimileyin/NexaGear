@@ -6,7 +6,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/checkout", "/order/", "/auth/"],
+      // Private or per-session surfaces. `/auth/` was listed but no such route
+      // exists — the real ones are the Clerk catch-alls and the admin page.
+      disallow: ["/checkout", "/order/", "/admin", "/sign-in", "/sign-up"],
     },
     sitemap: `${base}/sitemap.xml`,
   };

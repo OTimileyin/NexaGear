@@ -7,6 +7,7 @@ import { AddToCartButton } from "@/components/AddToCartButton";
 import { CatalogErrorState } from "@/components/CatalogState";
 import { formatMoney, inventoryLabel } from "@/lib/format";
 import { getProductBySlug } from "@/lib/catalog";
+import { productJsonLd, siteUrl } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -16,12 +17,23 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const canonical = `/product/${slug}`;
   try {
     const product = await getProductBySlug(slug);
     if (!product) return { title: "Product" };
     return {
       title: product.name,
       description: product.description,
+      alternates: { canonical },
+      openGraph: {
+        // A page-level openGraph replaces the root object rather than merging
+        // into it, so siteName has to be repeated or it is lost.
+        siteName: "NexaGear",
+        title: product.name,
+        description: product.description,
+        url: canonical,
+        type: "website",
+      },
     };
   } catch {
     return { title: "Product" };
@@ -48,6 +60,16 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
+      {/*
+        Product structured data for search engines. Built from the catalogue row
+        only — no ratings, reviews or stock levels, because inventing them is
+        both forbidden by the design guidelines and false. `productJsonLd`
+        escapes `<` and `>`, so a description cannot close this script tag.
+      */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: productJsonLd(product, siteUrl()) }}
+      />
       <nav aria-label="Breadcrumb" className="font-mono text-xs text-steel">
         <Link href="/shop" className="hover:text-drafting">
           SHOP

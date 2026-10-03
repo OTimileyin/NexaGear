@@ -4,8 +4,21 @@ import Link from "next/link";
 import { formatMoney, inventoryLabel } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
-export function ProductCard({ product }: { product: Product }) {
+/**
+ * `headingLevel` exists so the card's heading nests correctly under whatever
+ * section renders it: `h3` beneath a section `h2` on the home page, but `h2`
+ * directly beneath the page `h1` on /shop. Skipping a level is a WCAG failure
+ * (axe: heading-order) and it breaks the document outline for screen readers.
+ */
+export function ProductCard({
+  product,
+  headingLevel = "h3",
+}: {
+  product: Product;
+  headingLevel?: "h2" | "h3";
+}) {
   const status = inventoryLabel(product.inventoryStatus);
+  const Heading = headingLevel;
 
   return (
     <article>
@@ -44,9 +57,9 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
 
         <div className="mt-1 flex items-baseline justify-between gap-3">
-          <h3 className="font-medium group-hover:text-drafting">
+          <Heading className="font-medium group-hover:text-drafting">
             {product.name}
-          </h3>
+          </Heading>
           <p className="font-mono text-signal">{formatMoney(product.price)}</p>
         </div>
       </Link>

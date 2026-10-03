@@ -9,17 +9,28 @@ import "./globals.css";
 
 import { SiteHeader } from "@/components/SiteHeader";
 import { CartProvider } from "@/lib/cart/cart-context";
+import { siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
+  // Without a base, Next emits relative og:url/canonical values, which social
+  // crawlers cannot resolve.
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "NexaGear — gear for developers and makers",
     template: "%s · NexaGear",
   },
   description:
     "Mechanical keyboards, precision mice, USB-C hubs, power, Arduino kits, sensors, and prototyping tools for developers, makers, and robotics learners.",
+  applicationName: "NexaGear",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   openGraph: {
     type: "website",
     siteName: "NexaGear",
+    url: "/",
     title: "NexaGear — gear for developers and makers",
     description:
       "Keyboards, hubs, power, audio, and electronics kits for developers and makers — described like the datasheets you already read.",
@@ -30,6 +41,11 @@ export const metadata: Metadata = {
     description:
       "Keyboards, hubs, power, audio, and electronics kits for developers and makers.",
   },
+};
+
+export const viewport = {
+  themeColor: "#f6f3ec",
+  colorScheme: "light" as const,
 };
 
 export default function RootLayout({

@@ -39,7 +39,7 @@ export default async function ShopPage() {
         {products.length === 0 ? (
           <EmptyCatalogState />
         ) : (
-          <ProductGrid products={products} />
+          <ProductGrid products={products} headingLevel="h2" />
         )}
       </div>
     </div>
