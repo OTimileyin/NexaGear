@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   escapeJsonLd,
+  pageMetadata,
   productJsonLd,
   schemaAvailability,
+  SITE_CARD_ALT,
+  SITE_CARD_PATH,
   siteUrl,
   type SeoProduct,
 } from "@/lib/seo";
@@ -105,5 +108,83 @@ describe("productJsonLd", () => {
 describe("escapeJsonLd", () => {
   it("escapes angle brackets and ampersands", () => {
     expect(escapeJsonLd('{"a":"<b>&"}')).toBe('{"a":"\\u003cb\\u003e\\u0026"}');
+  });
+});
+
+describe("pageMetadata", () => {
+  const base = { title: "Shop", description: "The catalogue.", path: "/shop" };
+
+  it("makes the canonical and the og:url the same value", () => {
+    // These two disagreeing is the bug this helper exists to prevent: it told
+    // social crawlers that /shop was the homepage.
+    const meta = pageMetadata(base);
+    expect(meta.alternates?.canonical).toBe("/shop");
+    expect(meta.openGraph?.url).toBe(meta.alternates?.canonical);
+  });
+
+  it("defaults to the site card so a page cannot silently lose its image", () => {
+    const meta = pageMetadata(base);
+    expect(meta.openGraph?.images).toEqual([
+      { url: SITE_CARD_PATH, alt: SITE_CARD_ALT },
+    ]);
+    expect(meta.twitter?.images).toEqual([SITE_CARD_PATH]);
+  });
+
+  it("emits no image when told null, leaving a route's own card file in charge", () => {
+    const meta = pageMetadata({ ...base, image: null });
+    expect(meta.openGraph?.images).toBeUndefined();
+    expect(meta.twitter?.images).toBeUndefined();
+  });
+
+  it("uses an explicit image when given one", () => {
+    const meta = pageMetadata({
+      ...base,
+      image: { url: "/product/x/opengraph-image", alt: "Product card" },
+    });
+    expect(meta.openGraph?.images).toEqual([
+      { url: "/product/x/opengraph-image", alt: "Product card" },
+    ]);
+    expect(meta.twitter?.images).toEqual(["/product/x/opengraph-image"]);
+  });
+
+  it("publishes the wide twitter card, because the asset is 1200x630", () => {
+    // `card` lives on some members of the Twitter metadata union, so it has to
+    // be narrowed rather than read off the union directly.
+    const { twitter } = pageMetadata(base);
+    expect(twitter && "card" in twitter ? twitter.card : null).toBe(
+      "summary_large_image",
+    );
+  });
+
+  it("keeps the page title on the template but sends a plain social title", () => {
+    // `absolute` opts the <title> out of the " · NexaGear" template. Social
+    // titles have no template, so an object there would be a type error — the
+    // helper has to unwrap it.
+    const meta = pageMetadata({
+      ...base,
+      title: { absolute: "NexaGear — gear for developers and makers" },
+    });
+    expect(meta.title).toEqual({
+      absolute: "NexaGear — gear for developers and makers",
+    });
+    expect(meta.openGraph?.title).toBe("NexaGear — gear for developers and makers");
+    expect(meta.twitter?.title).toBe("NexaGear — gear for developers and makers");
+  });
+
+  it("names the site on every card", () => {
+    expect(pageMetadata(base).openGraph?.siteName).toBe("NexaGear");
+  });
+
+  it("leaves an ordinary page indexable", () => {
+    expect(pageMetadata(base).robots).toBeUndefined();
+  });
+
+  it("keeps functional pages out of search results while still following links", () => {
+    // robots.txt disallow stops crawling, not indexing: a linked-to /checkout
+    // can still be indexed without this.
+    const meta = pageMetadata({ ...base, path: "/checkout", index: false });
+    expect(meta.robots).toEqual({ index: false, follow: true });
+    // The canonical still matters, or the page advertises the homepage's URL.
+    expect(meta.alternates?.canonical).toBe("/checkout");
   });
 });

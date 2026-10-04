@@ -39,7 +39,9 @@ export const metadata: Metadata = {
       "Keyboards, hubs, power, audio, and electronics kits for developers and makers — described like the datasheets you already read.",
   },
   twitter: {
-    card: "summary",
+    // The card asset is 1200x630, so the wide card is the correct one —
+    // `summary` would crop it to a small square thumbnail.
+    card: "summary_large_image",
     title: "NexaGear — gear for developers and makers",
     description:
       "Keyboards, hubs, power, audio, and electronics kits for developers and makers.",

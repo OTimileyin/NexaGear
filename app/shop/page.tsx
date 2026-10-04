@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
-
 import { CatalogErrorState, EmptyCatalogState } from "@/components/CatalogState";
 import { ProductGrid } from "@/components/ProductGrid";
 import { getProducts } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Shop",
   description:
     "Browse the full NexaGear catalogue: developer setup, audio, connectivity, power, electronics, robotics, and prototyping gear.",
-};
+  path: "/shop",
+});
 
 export default async function ShopPage() {
   let products: Awaited<ReturnType<typeof getProducts>>;

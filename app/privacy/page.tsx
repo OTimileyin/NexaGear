@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Privacy",
   description: "What the NexaGear demo stores and what it doesn't.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

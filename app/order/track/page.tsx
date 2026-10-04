@@ -6,9 +6,16 @@ import { getCurrentUser } from "@/lib/auth";
 import { isUuid } from "@/lib/checkout";
 import { formatMoney } from "@/lib/format";
 import { isSampleRef, statusLabel, timelineIndex, timelineSteps } from "@/lib/orders";
+import { pageMetadata } from "@/lib/seo";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Track an order" };
+export const metadata = pageMetadata({
+  title: "Track an order",
+  description:
+    "Look up a NexaGear order by reference and see its fulfilment status.",
+  path: "/order/track",
+  index: false,
+});
 
 interface TrackedOrder {
   id: string;

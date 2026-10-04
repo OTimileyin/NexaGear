@@ -173,9 +173,82 @@ Suite is now **103/103** with `tsc --noEmit` and `eslint --max-warnings=0` clean
 | Mailgun secrets server-only | 8 | bundle grep evidence | `[x]` bundle grep clean |
 | Email failure ≠ order rollback | 6 | simulated-failure result | `[x]` code path + 5 unit tests (never throws; send after commit); live sim verified (D20) |
 | Mobile layout works | 7 | viewport checks | `[x]` real-browser 360px checks |
-| Keyboard interaction works | 7 | keyboard-only journey | `[ ]` controls labeled/focus styled/skip link present; full manual walkthrough pending |
+| Keyboard interaction works | 7 | keyboard-only journey | `[x]` automated keyboard journey passes (`tests/e2e/wedge.spec.ts`): Enter opens the cart sheet, focus moves inside the dialog, Escape closes it, focus returns to the control that opened it. Labels, focus styling and the skip link are all present. What remains manual: tab order through the checkout form, which needs a signed-in session. |
 | Production build passes | 9 | `npm run build` output | `[x]` clean-rebuild build=0 |
 | No secrets committed | 0+8 | git readiness + grep | `[x]` reviewed · 3 commits pushed (617f22d, 6a4e45f, fff81a3), `.gitignore` excludes secrets · nothing sensitive staged · git push succeeded |
 | Live URL (if HNG requires) | 9 | public smoke test | `BLOCKED: Vercel auth` (current token is invalid OIDC JWT) **and deploy is withheld pending explicit user authorisation** |
 
 **§35 Definition of Done** (open → browse → cart → Google → order → success → row in Supabase → email received; no fake states, no hard-coded success, no exposed secrets) = composite evidence of Phases 4, 5, 6, 9. **Status: reached.** Google sign-in, order creation, item persistence and trusted totals are all verified live (D20/D21). Google sign-in (PRD §8) is verified live; the order-row and email steps are **not** claimed. The path is not faked, not stubbed, and not bypassed: `orders`, `order_items`, and `profiles` remain at 0 rows, and `/order/success` still refuses to display an order that was not persisted.
+
+---
+
+## Phase 10 — Completion audit (2026-10-04)
+
+**Goal:** resolve every line of `DEPLOYMENT_CHECKLIST.md` and
+`PRODUCTION_QUALITY.md` — the rule in `AGENTS.md` §9 — by measuring rather than
+recalling. Nothing here is a new feature except where a required row was false.
+
+**What this phase changed (all defects found by the audit, none by review):**
+
+1. **`/` and `/shop` published no canonical, and `/shop` published the wrong
+   `og:url`** (the homepage's). Page metadata was hand-written per page, so
+   inherited fields drifted silently. Replaced with `pageMetadata()` in
+   `lib/seo.ts`: one `path` derives both the canonical and `og:url`.
+2. **Product pages published no `og:image` at all**, and their `twitter:title`
+   was the site's. A page-level `openGraph` object suppresses the inherited
+   file-convention card. Added `app/product/[slug]/opengraph-image.tsx`, drawing
+   the real part number, name, price, category and stock state.
+3. **`/shop` lost its social image the moment it declared its own metadata** —
+   a regression introduced and then caught during this same pass, because the
+   e2e check reads the rendered HTML instead of trusting the code.
+4. **`CatalogErrorState` told a shopper to check the application's database
+   connection** — developer-facing copy shown to a customer, forbidden by
+   `DESIGN_GUIDELINES.md` §Product language. Rewritten, with a test that fails if
+   internals reappear.
+5. **`/checkout`, `/order/track`, `/admin` and `/order/success` inherited
+   `og:url` of `/`**, fixed by the same consolidation. They also now emit
+   `noindex, follow`: `robots.txt` disallow stops crawling, not indexing, so a
+   linked-to `/checkout` could still appear in search results.
+
+**New checks (all inside the existing `unit` and `e2e` gates):**
+
+- `tests/e2e/quality.spec.ts` — console cleanliness on seven routes; an internal
+  link crawl asserting every `href` resolves; accessible names on every product
+  image; measured Cumulative Layout Shift; and a social-card check that decodes
+  each published card in the browser and asserts it is a 1200×630 PNG containing
+  the paper ground, ink text and signal accent.
+- `tests/catalog-state.test.tsx` — the empty and error states, which are
+  unreachable against a live database and therefore untested until now.
+- `tests/seo.test.ts` — `pageMetadata` canonical/`og:url` agreement, the site-card
+  default, `image: null`, and `absolute` title unwrapping.
+- `scripts/measure-first-load.mjs` — real encoded first-load JS from a production
+  server, with `MEASURE_DETAIL=1` for a per-chunk breakdown.
+
+**Evidence log:**
+
+- `[x]` **Meta tags measured, not assumed.** `/`, `/shop`, `/cart`, `/privacy`,
+  `/terms` and product routes all emit a canonical; `og:url` equals it on every
+  one; product pages emit a product card at
+  `/product/<slug>/opengraph-image` with alt text.
+- `[x]` **Social cards decoded in a browser**: both the site card (66,148 B) and
+  a product card (56,907 B) are valid PNGs, 1200×630, containing `#F6F3EC`,
+  `#1A1D21` and `#C4430F` — so they are rendered cards, not blank sheets.
+- `[x]` **Console clean** on seven routes; the only message is Clerk's
+  development-keys warning, ignored by an explicit pattern in the spec.
+- `[x]` **Every internal link resolves** — crawl over the rendered pages, zero
+  non-2xx.
+- `[x]` **CLS < 0.1**, measured with a `PerformanceObserver` in the browser.
+- `[x]` **First-load JS measured: 405 KB transferred per route against a 200 KB
+  budget — FLAGGED.** 215 KB of it is Clerk's prebuilt UI bundle, loaded on
+  routes that render no Clerk component. Recorded rather than fixed late (D34).
+- `[x]` **`npm run verify`: pass**, exit 0 — `typecheck · lint · unit ·
+  color-contrast-audit · build · apple-variant-compiles ·
+  dark-scheme-tokens-compile · secrets-in-bundle`.
+- `[x]` **178 unit tests in 13 files**, and **16/16 e2e** including the axe scan
+  across all four appearances. Two latent test defects surfaced when the whole
+  suite ran together (the `/cart` locator matched two headings); both fixed.
+- `[ ]` **Live smoke test — BLOCKED on the push.** The work is committed and
+  unpushed; the live site still serves the previous build.
+- `[ ]` **Simultaneous-user RLS isolation — UNVERIFIED.** Needs a second Clerk
+  account; a single authenticated request is verified (D20/D21), two concurrent
+  ones are not.

@@ -11,9 +11,15 @@ import {
   type AdminOrderRow,
 } from "@/lib/admin";
 import { formatMoney } from "@/lib/format";
+import { pageMetadata } from "@/lib/seo";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Admin" };
+export const metadata = pageMetadata({
+  title: "Admin",
+  description: "Order fulfilment view.",
+  path: "/admin",
+  index: false,
+});
 
 /**
  * Read-mostly admin.

@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 
+import { siteUrl } from "@/lib/seo";
+
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  // Same resolver as every canonical, so the sitemap URL cannot point at a
+  // different origin than the one the pages advertise.
+  const base = siteUrl();
   return {
     rules: {
       userAgent: "*",

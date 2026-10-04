@@ -4,8 +4,22 @@ import { CatalogErrorState, EmptyCatalogState } from "@/components/CatalogState"
 import { ProductGrid } from "@/components/ProductGrid";
 import { SampleDataNotice } from "@/components/SampleDataNotice";
 import { getCategories, getFeaturedProducts } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
+
+/**
+ * Declared here rather than only in the root layout so the homepage emits its
+ * own canonical. A canonical set on the root layout would be inherited by
+ * every route that does not override it, which would tell crawlers that
+ * /checkout and /admin are copies of the homepage.
+ */
+export const metadata = pageMetadata({
+  title: { absolute: "NexaGear — gear for developers and makers" },
+  description:
+    "Mechanical keyboards, precision mice, USB-C hubs, power, Arduino kits, sensors, and prototyping tools for developers, makers, and robotics learners.",
+  path: "/",
+});
 
 async function getData() {
   const [featured, categories] = await Promise.all([

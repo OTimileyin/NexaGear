@@ -10,8 +10,8 @@ export function CatalogErrorState() {
     >
       <h2 className="font-medium">The catalogue didn&apos;t load</h2>
       <p className="mt-2 max-w-prose text-sm text-ink/75">
-        NexaGear couldn&apos;t reach its product database. Check the app&apos;s
-        database connection and try again — nothing was changed.
+        The product list did not load. Try again — if it keeps failing, the
+        store is temporarily unavailable. Nothing was changed.
       </p>
       <button
         type="button"

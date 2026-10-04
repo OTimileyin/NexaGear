@@ -7,7 +7,7 @@ import { CatalogErrorState } from "@/components/CatalogState";
 import { ProductImage } from "@/components/ProductImage";
 import { formatMoney, inventoryLabel } from "@/lib/format";
 import { getProductBySlug } from "@/lib/catalog";
-import { productJsonLd, siteUrl } from "@/lib/seo";
+import { pageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -21,20 +21,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const product = await getProductBySlug(slug);
     if (!product) return { title: "Product" };
-    return {
+
+    // Built through the shared helper so the canonical and og:url cannot
+    // disagree. The social image comes from the sibling opengraph-image file,
+    // which renders this product's real name, part number and price.
+    return pageMetadata({
       title: product.name,
       description: product.description,
-      alternates: { canonical },
-      openGraph: {
-        // A page-level openGraph replaces the root object rather than merging
-        // into it, so siteName has to be repeated or it is lost.
-        siteName: "NexaGear",
-        title: product.name,
-        description: product.description,
-        url: canonical,
-        type: "website",
-      },
-    };
+      path: canonical,
+      // The card comes from the sibling opengraph-image file, which draws this
+      // product's real part number, name and price. Passing null keeps the site
+      // card from replacing it.
+      image: null,
+    });
   } catch {
     return { title: "Product" };
   }

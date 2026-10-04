@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 /**
  * SEO helpers — pure, so the structured data we publish can be unit-tested
  * rather than eyeballed (same rule as pricing and the order lifecycle).
@@ -16,6 +18,94 @@ export function siteUrl(): string {
       : "http://localhost:3000";
 
   return configured.replace(/\/+$/, "");
+}
+
+export const SITE_NAME = "NexaGear";
+
+export interface PageMetadataInput {
+  /**
+   * Page title. A plain string gets the root template's " · NexaGear" suffix;
+   * use `{ absolute }` to opt out (the homepage does, because its title is
+   * already the full brand line).
+   */
+  title: string | { absolute: string };
+  description: string;
+  /** Route path beginning with "/". Becomes BOTH the canonical and og:url. */
+  path: string;
+  /**
+   * Social image.
+   *
+   * - omitted → the site card in `app/opengraph-image.tsx`
+   * - `null`  → emit no image, so a sibling `opengraph-image` file supplies one
+   *   (this is how product pages get their own card)
+   *
+   * The distinction exists because declaring `openGraph` at page level stops
+   * the root file-convention image from being inherited. Before this was
+   * explicit, `/shop` silently lost its social image the first time it declared
+   * its own metadata — a regression nothing would have caught.
+   */
+  image?: { url: string; alt: string } | null;
+  /**
+   * Set false for functional or per-session pages. `robots.txt` disallow stops
+   * crawling; it does not stop indexing, so a linked-to `/checkout` can still
+   * appear in search results without this.
+   */
+  index?: boolean;
+}
+
+/**
+ * The site-wide social card. Must match the file convention at
+ * `app/opengraph-image.tsx`; the e2e check fetches every published og:image URL
+ * and fails if it does not return a PNG, so renaming that file cannot leave
+ * this pointing at nothing.
+ */
+export const SITE_CARD_PATH = "/opengraph-image";
+export const SITE_CARD_ALT = "NexaGear — gear for developers and makers";
+
+/**
+ * Per-route metadata, built in one place.
+ *
+ * Every page used to hand-write its own `metadata` object. That is how `/` and
+ * `/shop` ended up emitting no canonical at all, and how `/shop` ended up
+ * telling social crawlers its URL was the homepage: each page inherited
+ * whatever the root happened to declare, and nothing failed loudly. Deriving
+ * both from the same `path` means they cannot disagree with the route.
+ */
+export function pageMetadata({
+  title,
+  description,
+  path,
+  image,
+  index = true,
+}: PageMetadataInput): Metadata {
+  // Social titles are always plain strings; `absolute` only affects <title>.
+  const shareTitle = typeof title === "string" ? title : title.absolute;
+  const social = image === null ? null : (image ?? { url: SITE_CARD_PATH, alt: SITE_CARD_ALT });
+
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    ...(index
+      ? {}
+      : { robots: { index: false, follow: true } }),
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      url: path,
+      title: shareTitle,
+      description,
+      ...(social ? { images: [{ url: social.url, alt: social.alt }] } : {}),
+    },
+    twitter: {
+      // The card asset is 1200x630, so the wide card is the honest choice;
+      // `summary` would crop it to a small square thumbnail.
+      card: "summary_large_image",
+      title: shareTitle,
+      description,
+      ...(social ? { images: [social.url] } : {}),
+    },
+  };
 }
 
 export type SchemaAvailability =

@@ -5,9 +5,15 @@ import { SignInGate } from "@/components/SignInGate";
 import { getCurrentUser } from "@/lib/auth";
 import { formatMoney } from "@/lib/format";
 import { isUuid } from "@/lib/checkout";
+import { pageMetadata } from "@/lib/seo";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Order received" };
+export const metadata = pageMetadata({
+  title: "Order received",
+  description: "Confirmation for a placed NexaGear order.",
+  path: "/order/success",
+  index: false,
+});
 
 interface OrderRow {
   id: string;

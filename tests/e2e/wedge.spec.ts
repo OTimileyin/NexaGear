@@ -104,8 +104,15 @@ test("/cart still works as a deep link", async ({ page }) => {
   // A sheet cannot be linked to, so the standalone page must survive for
   // shared and bookmarked URLs.
   await page.goto("/cart");
-  await expect(page.getByRole("heading", { name: "Cart" })).toBeVisible();
-  await expect(page.getByText("Your cart is empty")).toBeVisible();
+  // `exact: true` is required: without it this also matches the empty state's
+  // "Your cart is empty" heading, and the locator resolves to two elements.
+  await expect(
+    page.getByRole("heading", { name: "Cart", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Your cart is empty" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse gear" })).toBeVisible();
 });
 
 test("404 page routes back to the shop", async ({ page }) => {

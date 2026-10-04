@@ -1,8 +1,17 @@
 import { SignInGate } from "@/components/SignInGate";
 import { CheckoutForm } from "@/components/CheckoutForm";
 import { getCurrentUser } from "@/lib/auth";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = { title: "Checkout" };
+// Functional and per-session: a search result for /checkout is never useful,
+// and without this it advertised og:url as the homepage.
+export const metadata = pageMetadata({
+  title: "Checkout",
+  description:
+    "Review your NexaGear order and place it. Prices and totals are calculated from the catalogue.",
+  path: "/checkout",
+  index: false,
+});
 
 export default async function CheckoutPage() {
   const user = await getCurrentUser();

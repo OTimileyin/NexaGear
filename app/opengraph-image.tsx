@@ -1,8 +1,12 @@
 import { ImageResponse } from "next/og";
 
+import { SITE_CARD_ALT } from "@/lib/seo";
+
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "NexaGear — gear for developers and makers";
+// Imported rather than repeated: the same string is published as og:image:alt
+// by every route that falls back to this card, and two copies would drift.
+export const alt = SITE_CARD_ALT;
 
 export default function OpengraphImage() {
   return new ImageResponse(
