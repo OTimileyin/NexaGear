@@ -293,3 +293,11 @@ recorded as D35, with `AGENTS.md` §2 amended in the same commit.
 - `[ ]` **No mobile app exists yet** — the Expo client, and the physical-phone
   demonstration the task requires, are both outstanding. Device verification
   will be owner-performed and recorded as such, never claimed from here.
+- `[x]` **Update strategy decided (D36):** ship without an updater for the
+  deadline, demo in Expo Go. **A pre-build requirement, and it has a one-way
+  door:** `expo-updates` is a native module, so **the first installable build
+  must contain it** or OTA updates become impossible for that binary forever.
+  Before any APK reaches a real user: add `expo-updates`, set `runtimeVersion`
+  and `updates.url` in v1, install v1 on a phone, publish an update, and confirm
+  the old install picks it up. Code signing is paid-tier only, so on free tier
+  the update channel is unsigned and that must be said rather than glossed.
