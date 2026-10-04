@@ -113,7 +113,7 @@ export function AdminStatusControl({
               }
               className={`border px-2 py-1 font-mono text-[11px] disabled:cursor-not-allowed disabled:opacity-60 ${
                 destructive
-                  ? "border-signal text-signal hover:bg-signal hover:text-white"
+                  ? "border-signal text-signal hover:bg-signal hover:text-paper"
                   : "border-ink/40 hover:border-ink hover:bg-ink hover:text-paper"
               }`}
             >

@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { ProductImage } from "@/components/ProductImage";
 import { useCart } from "@/lib/cart/cart-context";
 import { MAX_QTY, MIN_QTY, clampQuantity } from "@/lib/cart/math";
 import { formatMoney } from "@/lib/format";
@@ -28,15 +28,21 @@ export function CartLine({ item }: { item: CartItem }) {
   }
 
   return (
-    <li className="flex flex-col gap-4 border-b border-steel/40 py-6 sm:flex-row sm:items-center">
-      <div className="relative h-20 w-24 shrink-0 overflow-hidden border border-ink/15 bg-white">
+    /* Container queries, not `sm:`. This line is rendered in two very different
+       widths — the /cart page (~900px) and the slide-over sheet (~380px) — and
+       `sm:` measures the VIEWPORT, so on a desktop it would force the wide
+       horizontal layout inside a narrow sheet and overflow. `@md:` measures the
+       container the parent marked with `@container`, so each context gets the
+       layout that actually fits. */
+    <li className="flex flex-col gap-4 border-b border-steel/40 py-6 @md:flex-row @md:items-center">
+      <div className="relative h-20 w-24 shrink-0 overflow-hidden border border-ink/15 bg-surface">
         {item.imageUrl && (
-          <Image
+          // Decorative here: the product name is already the link text on this
+          // row, so repeating it would make the line read twice.
+          <ProductImage
             src={item.imageUrl}
-            alt=""
-            fill
-            sizes="96px"
-            className="object-cover"
+            name=""
+            className="h-full w-full"
           />
         )}
       </div>
@@ -77,7 +83,7 @@ export function CartLine({ item }: { item: CartItem }) {
             if (e.key === "Enter") commitDraft();
           }}
           aria-label={`Quantity for ${item.name}`}
-          className="h-9 w-14 border border-ink/30 bg-white text-center font-mono"
+          className="h-9 w-14 border border-ink/30 bg-surface text-center font-mono"
         />
         <button
           type="button"
@@ -89,17 +95,22 @@ export function CartLine({ item }: { item: CartItem }) {
         </button>
       </div>
 
-      <p className="w-24 text-right font-mono" aria-label={`Line total for ${item.name}`}>
-        {formatMoney(lineTotal)}
-      </p>
+      <div className="flex items-center justify-between gap-4 @md:block">
+        <p
+          className="text-right font-mono @md:w-24"
+          aria-label={`Line total for ${item.name}`}
+        >
+          {formatMoney(lineTotal)}
+        </p>
 
-      <button
-        type="button"
-        onClick={() => removeItem(item.productId)}
-        className="w-24 text-left text-sm text-ink/70 underline hover:text-signal"
-      >
-        Remove
-      </button>
+        <button
+          type="button"
+          onClick={() => removeItem(item.productId)}
+          className="text-left text-sm text-ink/70 underline hover:text-signal @md:w-24"
+        >
+          Remove
+        </button>
+      </div>
     </li>
   );
 }

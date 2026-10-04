@@ -1,25 +1,210 @@
 @import "tailwindcss";
 
+/* `apple:` matches any element inside <html data-theme="apple">, so a single
+   attribute set before paint re-skins the whole app. Declared with :where() so
+   the variant adds no specificity and cannot out-rank a utility added later. */
+@custom-variant apple (&:where([data-theme="apple"] *));
+
+/* ===========================================================================
+   Colour tokens — 4 combinations.
+
+   A theme (datasheet | apple) and a scheme (light | dark) are independent axes,
+   so there are four palettes. Every value below is measured by
+   `node scripts/color-contrast-audit.mjs`, which also greps this file for the
+   hexes it audits — so a colour edited here without re-running the audit fails
+   a required gate rather than silently shipping.
+
+   WHY ink AND paper SIMPLY INVERT IN DARK. Every existing usage keeps working
+   for free: `text-ink` becomes light text, `bg-paper` becomes a dark page, and
+   critically `hover:bg-ink hover:text-paper` — the inverted-button pattern —
+   flips to a light button with dark text without a single extra class. A dark
+   theme that added a parallel set of "dark:" classes would have had to restyle
+   every hover and inverted state by hand, and would have missed some.
+   ========================================================================= */
+
 @theme {
-  /* "The Datasheet" palette — 6 tokens, no gradients (DESIGN_GUIDELINES.md)
-     steel & signal retuned 2026-10-01 for WCAG AA (see DECISION_LOG D14):
-     steel #5C646D = 5.4:1 on paper; signal #C4430F = 4.6:1 on paper,
-     5.1:1 with white text. */
+  /* datasheet / light — "The Datasheet" palette, 6 tokens, no gradients.
+     steel & signal retuned 2026-10-01 for WCAG AA (DECISION_LOG D14). */
   --color-paper: #f6f3ec;
   --color-ink: #1a1d21;
   --color-drafting: #2254a3;
   --color-signal: #c4430f;
   --color-steel: #5c646d;
   --color-stock: #2e7d4f;
+  --color-surface: #ffffff;
 
   --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* datasheet / dark — a dark drafting sheet, not a black one. The warm cast is
+   kept so the theme still reads as paper-inverted rather than generic dark. */
+:root[data-scheme="dark"] {
+  --color-paper: #16181c;
+  --color-surface: #1f2228;
+  --color-ink: #e9e7e1;
+  --color-drafting: #8ab4f8;
+  --color-signal: #ff8a5b;
+  --color-steel: #a7adb6;
+  --color-stock: #5fd39a;
+}
+
+/* apple / light — NOT Apple's published hexes. `#007AFF` measures 4.02:1 on
+   white and `#34C759` measures 2.22:1, so both fail WCAG AA as text and cannot
+   be used here. These are darkened Apple hues measured to pass. */
+:root[data-theme="apple"] {
+  --color-paper: #ffffff;
+  --color-ink: #1d1d1f;
+  --color-drafting: #0058b8;
+  --color-signal: #0058b8;
+  --color-steel: #5b5b60;
+  --color-stock: #1c6b3f;
+  --color-surface: #f5f5f7;
+
+  /* The platform UI font is the honest equivalent of SF Pro here: it *is* SF Pro
+     on Apple hardware, and it needs no webfont download. IBM Plex Mono stays
+     available for genuine code, but the theme stops using it for prices. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* apple / dark — Apple's true black page with a raised surface. `#409CFF` is
+   Apple's own dark-mode link blue and measures 6.5:1 on black; the light
+   scheme's `#0058b8` measures 1.9:1 there and is unusable. */
+:root[data-theme="apple"][data-scheme="dark"] {
+  --color-paper: #000000;
+  --color-surface: #1c1c1e;
+  --color-ink: #f5f5f7;
+  --color-drafting: #409cff;
+  --color-signal: #409cff;
+  --color-steel: #a1a1a6;
+  --color-stock: #3fbf6b;
+}
+
+/* `color-scheme` tells the browser to render its own UI — scrollbars, form
+   controls, the default focus ring — to match. Without it a dark page still
+   gets a white scrollbar and a light dropdown, which is the most visible way a
+   dark mode looks unfinished. */
+:root[data-scheme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-scheme="light"] {
+  color-scheme: light;
 }
 
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  /* Colour transitions are the one motion this theme adds; they are cheap and
+     non-essential, so reduced-motion neutralises them like everything else. */
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+/* Long lines of body copy are measurably harder to track in a light-on-dark
+   page at the same measure, so the dark schemes get a slightly narrower,
+   taller text block. Scoped by data-scheme so it does not affect the default. */
+:root[data-scheme="dark"] main {
+  line-height: 1.65;
+}
+
+/* Prices are tabular in both themes so columns of money line up. In the
+   datasheet theme that is the mono convention; here it is the numeric system
+   font, which is what Apple does with prices. */
+.apple-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   Cart slide-over sheet.
+
+   Built on the native <dialog> opened with showModal(), which already handles
+   modal semantics, the focus trap, Escape and top-layer stacking. Only the
+   placement and the entrance motion are left to define here.
+
+   Top layer beats every z-index, so the sheet can never be painted under the
+   header, and no z-index scale has to be invented for it.
+   ========================================================================= */
+.cart-sheet {
+  margin: 0 0 0 auto;
+  height: 100dvh;
+  /* dvh, not vh: on mobile Safari a vh sheet is taller than the visible
+     viewport, which pushes the totals below the fold. */
+  max-height: 100dvh;
+  width: min(26rem, 100vw);
+  max-width: 100vw;
+  padding: 0;
+  border: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  /* Sliding in is "opening", which DESIGN_GUIDELINES allows as motion. It is
+     transform-only so it stays on the compositor. */
+  animation: cart-sheet-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.cart-sheet::backdrop {
+  /* Fades rather than appearing instantly, so the sheet reads as coming in
+     over the page rather than replacing it. */
+  animation: cart-sheet-backdrop-in 220ms ease-out both;
+}
+
+@keyframes cart-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes cart-sheet-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Locking page scroll without letting the layout jump when the scrollbar
+   disappears. `scrollbar-gutter` reserves its width permanently, so this is a
+   no-op on platforms with classic scrollbars. */
+html.cart-sheet-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* ===========================================================================
+   Product artwork.
+
+   The SVGs carry shape and shading only — no colour of their own. Rendered as a
+   mask, the artwork supplies the alpha and the colour below supplies the ink,
+   so one file works on every appearance instead of hardcoding a light-mode
+   palette into the asset.
+
+   This also removes the last light-locked thing on the site: the artwork used
+   to contain #F6F3EC as a full-canvas background, which rendered as a bright
+   rectangle on a dark page no matter what the page's own background was.
+   ========================================================================= */
+.product-art {
+  display: block;
+  background-color: var(--color-ink);
+  -webkit-mask-image: var(--product-art-src);
+  mask-image: var(--product-art-src);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.product-art--accent {
+  background-color: var(--color-drafting);
 }
 
 /* Visible focus everywhere (WCAG 2.2 AA) */
@@ -41,6 +226,15 @@ body {
 .animate-draw-rule {
   transform-origin: left;
   animation: draw-rule 600ms ease-out both;
+}
+
+/* The drafting callout is the datasheet theme's signature gesture. The apple
+   theme replaces rules with space, so the gesture is removed rather than
+   merely slowed down. */
+[data-theme="apple"] .animate-draw-rule {
+  animation: none;
+  transform: none;
+  display: none;
 }
 
 /* Motion explains opening/removing/confirming only — instant otherwise */

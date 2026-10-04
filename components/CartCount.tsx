@@ -11,7 +11,7 @@ export function CartCount() {
 
   return (
     <span
-      className="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-signal px-1 font-mono text-[11px] leading-5 text-white"
+      className="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-signal px-1 font-mono text-[11px] leading-5 text-paper"
       aria-hidden="true"
     >
       {count}

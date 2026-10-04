@@ -31,12 +31,12 @@ export function AddToCartButton({ product }: { product: Product }) {
         type="button"
         onClick={handleAdd}
         disabled={unavailable}
-        className="w-full bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90 disabled:cursor-not-allowed disabled:bg-steel sm:w-auto"
+        className="w-full bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90 disabled:cursor-not-allowed disabled:bg-steel sm:w-auto apple:rounded-full apple:px-7 apple:py-3.5 apple:text-base"
       >
         {unavailable ? "Out of stock" : "Add to cart"}
       </button>
 
-      <p aria-live="polite" className="mt-3 min-h-5 text-sm text-stock">
+      <p aria-live="polite" className="mt-3 min-h-5 text-sm text-stock apple:text-base">
         {added && (
           <>
             Added to cart.{" "}

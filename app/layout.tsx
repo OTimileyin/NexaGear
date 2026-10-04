@@ -8,7 +8,10 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "./globals.css";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { ThemeScript } from "@/components/ThemeScript";
+import { CartSheet } from "@/components/CartSheet";
 import { CartProvider } from "@/lib/cart/cart-context";
+import { CartSheetProvider } from "@/lib/cart-sheet";
 import { siteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -44,15 +47,28 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#f6f3ec",
-  colorScheme: "light" as const,
+  // Browser chrome follows the same media query the page resolves its scheme
+  // with, so the address bar matches the page rather than staying light.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#16181c" },
+  ],
+  // Declaring both means the browser may render native UI (scrollbars, form
+  // controls) in dark before our own CSS has loaded. The page overrides this
+  // per-scheme via the `color-scheme` property in globals.css.
+  colorScheme: "light dark" as const,
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    // The bootstrap script writes data-theme onto this element before paint, so
+    // React must not be told to expect a fixed attribute set.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="flex min-h-screen flex-col antialiased">
         <ClerkProvider>
           <a
@@ -62,25 +78,31 @@ export default function RootLayout({
             Skip to main content
           </a>
           <CartProvider>
-            <SiteHeader />
-            <main id="main-content" className="flex-1">{children}</main>
-            <footer className="mt-16 border-t border-ink/15">
-              <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel sm:flex-row sm:items-center sm:justify-between">
-                <p>
-                  NexaGear — HNG internship assignment demo. Payments run in
-                  Paystack test mode; no real money moves.
-                </p>
-                <p className="flex items-center gap-4 font-mono">
-                  <Link href="/privacy" className="hover:text-drafting">
-                    Privacy
-                  </Link>
-                  <Link href="/terms" className="hover:text-drafting">
-                    Terms
-                  </Link>
-                  <span>Free delivery · NG-2026</span>
-                </p>
-              </div>
-            </footer>
+            {/* The sheet's open/closed state is UI-only and deliberately lives
+                outside the cart data layer, so nothing here changes what is
+                persisted in the cart. */}
+            <CartSheetProvider>
+              <SiteHeader />
+              <main id="main-content" className="flex-1">{children}</main>
+              <footer className="mt-16 border-t border-ink/15 apple:mt-24 apple:border-t-0 apple:bg-surface">
+                <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel apple:max-w-6xl apple:py-8 sm:flex-row sm:items-center sm:justify-between">
+                  <p>
+                    NexaGear — HNG internship assignment demo. Payments run in
+                    Paystack test mode; no real money moves.
+                  </p>
+                  <p className="flex items-center gap-4 font-mono apple:font-sans apple:text-sm">
+                    <Link href="/privacy" className="hover:text-drafting">
+                      Privacy
+                    </Link>
+                    <Link href="/terms" className="hover:text-drafting">
+                      Terms
+                    </Link>
+                    <span>Free delivery · NG-2026</span>
+                  </p>
+                </div>
+              </footer>
+              <CartSheet />
+            </CartSheetProvider>
           </CartProvider>
         </ClerkProvider>
       </body>

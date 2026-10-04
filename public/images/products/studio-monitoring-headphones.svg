@@ -1,13 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
-  <rect width="400" height="300" fill="#F6F3EC"/>
-  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
-  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
-    <path d="M120 170v-20c0-44 36-80 80-80s80 36 80 80v20"/>
-    <rect x="98" y="160" width="44" height="70" rx="16"/>
-    <rect x="258" y="160" width="44" height="70" rx="16"/>
-    <path d="M106 176h28M106 194h28M266 176h28M266 194h28" stroke-width="1.2"/>
-    <path d="M142 168c14-8 30-12 58-12s44 4 58 12" stroke-width="1.2"/>
-    <path d="M302 214c0 24-18 40-46 44" stroke="#2254A3"/>
-  </g>
-  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-004</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <!-- Shape and shading only; rendered as a CSS mask so it follows the theme. -->
+  <defs>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".92"/>
+      <stop offset=".55" stop-color="#000" stop-opacity=".66"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".38"/>
+    </linearGradient>
+    <linearGradient id="cushion" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".18"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx=".35" cy=".25" r=".55">
+      <stop offset="0" stop-color="#000" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- headband arc -->
+  <path d="M118 176v-22a82 82 0 0 1 164 0v22" fill="none" stroke="url(#band)" stroke-width="20" stroke-linecap="round"/>
+  <path d="M136 160a66 66 0 0 1 128 0" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- slider arms into each cup -->
+  <rect x="110" y="168" width="16" height="34" rx="7" fill="#000" fill-opacity=".8"/>
+  <rect x="274" y="168" width="16" height="34" rx="7" fill="#000" fill-opacity=".8"/>
+
+  <!-- left ear cup -->
+  <rect x="86" y="192" width="72" height="86" rx="30" fill="url(#cup)"/>
+  <rect x="86" y="192" width="72" height="86" rx="30" fill="url(#sheen)"/>
+  <ellipse cx="122" cy="235" rx="26" ry="33" fill="url(#cushion)"/>
+  <ellipse cx="122" cy="235" rx="13" ry="18" fill="#000" fill-opacity=".85"/>
+
+  <!-- right ear cup, mirrored so the pair reads symmetric -->
+  <rect x="242" y="192" width="72" height="86" rx="30" fill="url(#cup)"/>
+  <rect x="242" y="192" width="72" height="86" rx="30" fill="url(#sheen)"/>
+  <ellipse cx="278" cy="235" rx="26" ry="33" fill="url(#cushion)"/>
+  <ellipse cx="278" cy="235" rx="13" ry="18" fill="#000" fill-opacity=".85"/>
+
+  <!-- cable from the left cup -->
+  <path d="M110 278c-4 12-16 14-16 22" stroke="#000" stroke-opacity=".7" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- contact shadow -->
+  <ellipse cx="200" cy="288" rx="112" ry="8" fill="#000" fill-opacity=".15"/>
 </svg>

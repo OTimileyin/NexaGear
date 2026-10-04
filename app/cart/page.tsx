@@ -13,9 +13,11 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
-      <div className="flex items-baseline justify-between border-b border-ink/15 pb-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Cart</h1>
-        <span className="font-mono text-[11px] text-steel">
+      <div className="flex items-baseline justify-between border-b border-ink/15 pb-3 apple:border-b-0">
+        <h1 className="text-2xl font-semibold tracking-tight apple:text-4xl">
+          Cart
+        </h1>
+        <span className="font-mono text-[11px] text-steel apple:hidden">
           {items.length === 0
             ? "00 LINES"
             : `${String(items.length).padStart(2, "0")} ${items.length === 1 ? "LINE" : "LINES"}`}
@@ -23,7 +25,7 @@ export default function CartPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-10 border-l-4 border-drafting bg-white px-6 py-8">
+        <div className="mt-10 border-l-4 border-drafting bg-surface px-6 py-8 apple:rounded-2xl apple:border-l-0 apple:border apple:border-drafting/30 apple:bg-surface">
           <h2 className="font-medium">Your cart is empty</h2>
           <p className="mt-2 text-sm text-ink/75">
             Nothing has been added yet. Everything in the catalogue is one
@@ -31,20 +33,20 @@ export default function CartPage() {
           </p>
           <Link
             href="/shop"
-            className="mt-4 inline-block bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+            className="mt-4 inline-block bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90 apple:rounded-full apple:px-7 apple:py-3.5 apple:text-base"
           >
             Browse gear
           </Link>
         </div>
       ) : (
         <>
-          <ul className="mt-2">
+          <ul className="mt-2 @container">
             {items.map((item) => (
               <CartLine key={item.productId} item={item} />
             ))}
           </ul>
 
-          <dl className="mt-8 ml-auto w-full max-w-sm space-y-2 font-mono text-sm">
+          <dl className="mt-8 ml-auto w-full max-w-sm space-y-2 font-mono text-sm apple:font-sans apple:text-base">
             <div className="flex justify-between">
               <dt className="text-steel">Subtotal</dt>
               <dd>{formatMoney(subtotal)}</dd>
@@ -55,7 +57,7 @@ export default function CartPage() {
             </div>
             <div className="flex justify-between border-t border-steel/50 pt-2 text-base">
               <dt className="font-semibold">Total</dt>
-              <dd className="font-semibold text-signal">
+              <dd className="font-semibold text-signal apple-tabular">
                 {formatMoney(subtotal)}
               </dd>
             </div>
@@ -64,13 +66,13 @@ export default function CartPage() {
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
               href="/checkout"
-              className="bg-signal px-6 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+              className="bg-signal px-6 py-3 text-sm font-semibold text-paper hover:bg-signal/90 apple:rounded-full apple:px-8 apple:py-3.5 apple:text-base"
             >
               Continue to checkout
             </Link>
             <Link
               href="/shop"
-              className="border border-ink px-5 py-3 text-sm font-medium hover:bg-ink hover:text-paper"
+              className="border border-ink px-5 py-3 text-sm font-medium hover:bg-ink hover:text-paper apple:rounded-full apple:border-0 apple:bg-surface"
             >
               Keep browsing
             </Link>

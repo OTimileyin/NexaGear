@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import { ProductImage } from "@/components/ProductImage";
 import { formatMoney, inventoryLabel } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
@@ -23,15 +23,11 @@ export function ProductCard({
   return (
     <article>
       <Link href={`/product/${product.slug}`} className="group block">
-        <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-white">
+        {/* Datasheet: a bordered plate. Apple: a rounded, borderless tile on a
+            raised surface — the separation comes from the surface, not a rule. */}
+        <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-surface apple:aspect-square apple:rounded-2xl apple:border-0 apple:bg-surface apple:p-8">
           {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover"
-            />
+            <ProductImage src={product.imageUrl} name={product.name} className="h-full w-full" />
           ) : (
             <div
               className="flex h-full items-center justify-center font-mono text-xs text-steel"
@@ -42,10 +38,18 @@ export function ProductCard({
           )}
         </div>
 
-        {/* annotation strip: part no. · category · availability */}
-        <div className="mt-2 flex items-center justify-between gap-2 border-t border-steel/50 pt-2 font-mono text-[11px] text-steel">
+        {/* annotation strip: part no. · category · availability. This strip IS
+            the datasheet concept, so the apple theme keeps only the part
+            number — the metadata a shopper would actually need — and drops the
+            rest rather than restyling it. */}
+        <div className="mt-2 flex items-center justify-between gap-2 border-t border-steel/50 pt-2 font-mono text-[11px] text-steel apple:mt-3 apple:border-0 apple:pt-0 apple:font-sans apple:text-xs">
           <span>
-            {product.sku} · {product.category}
+            {/* The part number is the datasheet's whole conceit, so it stays in
+                that theme and is dropped from the apple one. */}
+            <span className="apple:hidden">{product.sku} · </span>
+            <span className="apple:font-medium apple:text-ink">
+              {product.category}
+            </span>
           </span>
           <span className="flex items-center gap-1.5">
             <span
@@ -56,11 +60,13 @@ export function ProductCard({
           </span>
         </div>
 
-        <div className="mt-1 flex items-baseline justify-between gap-3">
-          <Heading className="font-medium group-hover:text-drafting">
+        <div className="mt-1 flex items-baseline justify-between gap-3 apple:mt-2">
+          <Heading className="font-medium group-hover:text-drafting apple:text-lg apple:font-semibold">
             {product.name}
           </Heading>
-          <p className="font-mono text-signal">{formatMoney(product.price)}</p>
+          <p className="font-mono text-signal apple-tabular apple:font-sans apple:text-base">
+            {formatMoney(product.price)}
+          </p>
         </div>
       </Link>
     </article>

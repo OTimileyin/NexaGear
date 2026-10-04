@@ -1,5 +1,37 @@
 # NexaGear — Design Guidelines
 
+> **Two approved directions (D29) × two colour schemes (D30) — four appearances.**
+> `datasheet/light` is the shipped default and is unchanged. A second direction,
+> `apple`, is a **comparison**, reachable with `?theme=apple` or the header
+> switcher. Both are available light or dark via `?scheme=` or the Auto/Light/Dark
+> control.
+>
+> None of this is a fork. There is one component tree and one set of colour
+> tokens; the appearance is a `data-theme` attribute plus a `data-scheme`
+> attribute, and CSS custom properties overridden under those selectors do the
+> rest. Adding a third direction or a third scheme means adding token blocks, not
+> duplicating components.
+>
+> **The rule that makes dark mode work: `ink` and `paper` invert.** Everything
+> else follows — `text-ink`, `bg-paper`, and the inverted-button pattern
+> (`hover:bg-ink hover:text-paper`) all stay correct with no extra classes.
+>
+> **Never write a literal colour.** No `text-white`, no `bg-white`, no arbitrary
+> hex. All colour comes from the seven tokens. A literal is how the primary
+> button ended up white-on-light-orange at 2.32:1 in dark mode while passing
+> every other check. See DECISION_LOG D29, D30 and
+> `scripts/color-contrast-audit.mjs`.
+>
+> **If you are about to "improve" this design by making it look more like
+> Apple, read DECISION_LOG D31 first.** It records the tradeoff, why the apple
+> direction ships as a comparison rather than a replacement, which direction
+> wins if only one can ship, and — stated in advance — what evidence would flip
+> the decision. The short version: the apple theme removes 11 identity-bearing
+> elements including every part number and annotation, and it costs one extra
+> token layer to keep both. The honest cost of this decision is that a reviewer
+> who prefers the apple direction will see it as the worse product, because it
+> is.
+
 **Signature concept: "The Datasheet."** Every NexaGear product is presented like an engineering component datasheet — the document this exact audience already reads. Grounded in: engineering workbenches, electronics packaging, technical product photography, developer hardware (PRD §26).
 
 ## Pass 1 — Design direction
@@ -70,6 +102,25 @@ Motion explains: opening (callouts draw in), removing (row collapse), confirming
 - Hero and grids show real catalogue product imagery (PRD §28 seed set), original/licensed only (PRD §29).
 - No fake testimonials, ratings, user counts, logos, or statistics (PRD §26, MASTER §16).
 
+**Product artwork carries NO colour of its own (D33).** Every file in
+`public/images/products/` draws shape and shading only, varying *opacity* rather
+than hue, and is rendered through `components/ProductImage.tsx` as a CSS **mask**
+so the ink comes from CSS. Two rules follow, and both were learned the hard way:
+
+- **Never put a hex in an SVG.** The original artwork hardcoded `#F6F3EC` as a
+  full-canvas background, which is why it rendered as a bright rectangle on a
+  dark page. Nothing inside an `<img>`-loaded SVG can be themed; a mask is what
+  makes one file work on all four appearances.
+- **Never bake annotations into artwork.** The old files carried the datasheet's
+  `65% LAYOUT` callouts and part-number captions inside the image, so the apple
+  theme could remove every annotation the app drew and the drawings still had
+  theirs. If a caption is wanted, it belongs in the markup where it can be
+  switched off.
+
+`scripts/shoot-product-art.mjs` checks all eleven files in a real browser: each
+must paint a visible range and at least four distinct luminance buckets, so a
+flat silhouette or an empty box fails rather than looking merely "fine".
+
 ## Pass 2 — Anti-template critique (recorded)
 
 | Question | Answer |
@@ -89,6 +140,10 @@ Motion explains: opening (callouts draw in), removing (row collapse), confirming
 ## Accessibility (WCAG 2.2 AA)
 
 Semantic headings · keyboard-operable nav, cart controls, and checkout · labeled fields · visible focus (`drafting-blue`, ≥3:1) · contrast ≥4.5:1 text / ≥3:1 UI · validation errors tied to inputs · meaningful image alt text · reduced-motion support · no color-only information. Keyboard-only checkout is an acceptance gate (see `TESTING.md`).
+
+**This applies to all four appearances.** `tests/e2e/theme-axe.spec.ts` scans every public route in all four theme-and-scheme combinations at WCAG 2.2 AA, and asserts `data-theme` *and* `data-scheme` applied **before** each scan — because a light-themed scan of a dark page still reports "accessible", so scanning the wrong scheme passes while proving nothing.
+
+`scripts/color-contrast-audit.mjs` is the second line of defence: it measures 16 pairings across all four palettes and fails if any drops below its threshold, or if an audited colour is missing from `app/globals.css`.
 
 ## Anti-template rules (enforcement checklist)
 

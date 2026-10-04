@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { AuthSection } from "@/components/AuthSection";
-import { CartCount } from "@/components/CartCount";
+import { CartTrigger } from "@/components/CartTrigger";
+import { SchemeToggle } from "@/components/SchemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -26,10 +28,15 @@ export async function SiteHeader() {
   const admin = await isAdmin();
 
   return (
-    <header className="border-b border-ink/15">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4">
+    // The datasheet theme's header is defined by a hairline rule underneath.
+    // The apple theme drops the rule and gains vertical breathing room, since
+    // space is what separates surfaces in that language.
+    <header className="border-b border-ink/15 apple:border-b-0 apple:bg-surface/70">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4 apple:max-w-6xl apple:py-6">
         <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold tracking-tight">NexaGear</span>
+          <span className="text-lg font-semibold tracking-tight apple:text-xl">
+            NexaGear
+          </span>
           <span className="hidden font-mono text-[11px] text-steel sm:inline">
             NG-2026
           </span>
@@ -38,19 +45,14 @@ export async function SiteHeader() {
           <Link href="/shop" className="hover:text-drafting">
             Shop
           </Link>
-          <Link
-            href="/cart"
-            className="flex items-center font-mono hover:text-drafting"
-            aria-label="Cart"
-          >
-            Cart
-            <CartCount />
-          </Link>
+          <CartTrigger />
           {admin && (
-            <Link href="/admin" className="font-mono text-xs hover:text-drafting">
+            <Link href="/admin" className="font-mono text-xs hover:text-drafting apple:font-sans">
               Admin
             </Link>
           )}
+          <ThemeToggle />
+          <SchemeToggle />
           <AuthSection />
         </nav>
       </div>

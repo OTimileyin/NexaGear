@@ -47,7 +47,7 @@ export async function SampleDataNotice() {
   return (
     <aside
       aria-label="Sample data notice"
-      className="border-l-4 border-drafting bg-white px-4 py-3 text-sm"
+      className="border-l-4 border-drafting bg-surface px-4 py-3 text-sm"
     >
       <p className="font-mono text-[11px] text-steel">
         SAMPLE DATA · FICTIONAL ORDERS

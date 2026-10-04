@@ -99,7 +99,7 @@ export default async function TrackOrderPage({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/shop"
-            className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+            className="bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90"
           >
             Browse the catalogue
           </Link>
@@ -139,7 +139,7 @@ export default async function TrackOrderPage({
       </p>
 
       {row.is_sample && (
-        <p className="mt-4 border-l-4 border-drafting bg-white px-4 py-3 text-sm">
+        <p className="mt-4 border-l-4 border-drafting bg-surface px-4 py-3 text-sm">
           <span className="font-mono text-[11px] text-steel">SAMPLE ORDER · NOT REAL</span>
           <span className="mt-1 block text-ink/80">
             This is invented demo data so the tracking page can be seen without
@@ -192,13 +192,13 @@ export default async function TrackOrderPage({
           })}
         </ol>
       ) : (
-        <p className="mt-8 border-l-4 border-signal bg-white px-4 py-3 text-sm">
+        <p className="mt-8 border-l-4 border-signal bg-surface px-4 py-3 text-sm">
           This order was cancelled, so it isn&apos;t being prepared or shipped.
         </p>
       )}
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2">
-        <div aria-live="polite" className="border-l-4 border-drafting bg-white px-4 py-3 text-sm">
+        <div aria-live="polite" className="border-l-4 border-drafting bg-surface px-4 py-3 text-sm">
           <p className="font-mono text-[11px] text-steel">LAST UPDATED</p>
           <p className="mt-1">
             {moved.toLocaleDateString("en-GB", {
@@ -216,7 +216,7 @@ export default async function TrackOrderPage({
           </p>
         </div>
 
-        <div className="border-l-4 border-steel/40 bg-white px-4 py-3 text-sm">
+        <div className="border-l-4 border-steel/40 bg-surface px-4 py-3 text-sm">
           <p className="font-mono text-[11px] text-steel">DELIVERING TO</p>
           <p className="mt-1">{row.customer_name}</p>
           <p className="text-ink/75">{row.shipping_address}</p>
@@ -256,7 +256,7 @@ export default async function TrackOrderPage({
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/shop"
-          className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+          className="bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90"
         >
           Continue shopping
         </Link>

@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { CatalogErrorState } from "@/components/CatalogState";
+import { ProductImage } from "@/components/ProductImage";
 import { formatMoney, inventoryLabel } from "@/lib/format";
 import { getProductBySlug } from "@/lib/catalog";
 import { productJsonLd, siteUrl } from "@/lib/seo";
@@ -70,7 +70,7 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: productJsonLd(product, siteUrl()) }}
       />
-      <nav aria-label="Breadcrumb" className="font-mono text-xs text-steel">
+      <nav aria-label="Breadcrumb" className="font-mono text-xs text-steel apple:font-sans apple:text-sm">
         <Link href="/shop" className="hover:text-drafting">
           SHOP
         </Link>
@@ -81,15 +81,12 @@ export default async function ProductPage({ params }: Props) {
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         {/* Annotated product image */}
         <div>
-          <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-white">
+          <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-surface apple:aspect-square apple:rounded-3xl apple:border-0 apple:bg-surface apple:p-12">
             {product.imageUrl ? (
-              <Image
+              <ProductImage
                 src={product.imageUrl}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
+                name={product.name}
+                className="h-full w-full"
               />
             ) : (
               <div
@@ -102,24 +99,24 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           {/* drafting dimension rule that draws in */}
-          <div className="relative mt-3 h-4" aria-hidden="true">
+          <div className="relative mt-3 h-4 apple:hidden" aria-hidden="true">
             <div className="animate-draw-rule absolute inset-x-0 top-1/2 h-px bg-drafting" />
             <div className="absolute left-0 top-0 h-full w-px bg-drafting" />
             <div className="absolute right-0 top-0 h-full w-px bg-drafting" />
           </div>
-          <p className="mt-1 font-mono text-[11px] text-steel">
+          <p className="mt-1 font-mono text-[11px] text-steel apple:hidden">
             {product.sku} · {product.category.toUpperCase()} · REV 2026-10
           </p>
         </div>
 
         {/* Spec sheet */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight apple:text-4xl">
             {product.name}
           </h1>
           <p className="mt-4 text-ink/80">{product.description}</p>
 
-          <dl className="mt-8 divide-y divide-steel/40 border-y border-steel/40 font-mono text-sm">
+          <dl className="mt-8 divide-y divide-steel/40 border-y border-steel/40 font-mono text-sm apple:mt-10 apple:divide-y-0 apple:border-y-0 apple:font-sans apple:text-base">
             <div className="flex justify-between py-3">
               <dt className="text-steel">Part no.</dt>
               <dd>{product.sku}</dd>
@@ -138,15 +135,17 @@ export default async function ProductPage({ params }: Props) {
                 {status.text}
               </dd>
             </div>
-            <div className="flex justify-between py-3">
+            <div className="flex justify-between py-3 apple:py-2">
               <dt className="text-steel">Price</dt>
-              <dd className="text-signal">{formatMoney(product.price)}</dd>
+              <dd className="text-signal apple-tabular apple:text-lg apple:font-semibold">
+                {formatMoney(product.price)}
+              </dd>
             </div>
           </dl>
 
           <AddToCartButton product={product} />
 
-          <p className="mt-2 font-mono text-xs text-steel">
+          <p className="mt-2 font-mono text-xs text-steel apple:font-sans apple:text-sm">
             Free delivery for this demo · priced from the catalogue record at
             checkout
           </p>

@@ -50,7 +50,7 @@ export function AuthSection() {
         <button
           type="button"
           onClick={handleSignOut}
-          className="whitespace-nowrap border border-ink/30 px-3 py-1.5 text-sm hover:bg-ink hover:text-paper"
+          className="whitespace-nowrap border border-ink/30 px-3 py-1.5 text-sm hover:bg-ink hover:text-paper apple:rounded-full apple:border-0 apple:bg-surface"
         >
           Sign out
         </button>
@@ -64,7 +64,7 @@ export function AuthSection() {
         type="button"
         onClick={handleSignIn}
         disabled={pending}
-        className="whitespace-nowrap border border-ink/30 px-3 py-1.5 text-sm hover:bg-ink hover:text-paper disabled:opacity-60"
+        className="whitespace-nowrap border border-ink/30 px-3 py-1.5 text-sm hover:bg-ink hover:text-paper disabled:opacity-60 apple:rounded-full apple:border-0 apple:bg-surface"
       >
         {pending ? "Redirecting…" : "Sign in"}
       </button>

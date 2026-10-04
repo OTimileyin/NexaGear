@@ -36,7 +36,7 @@ function MissingOrder({ title, body }: { title: string; body: string }) {
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
           href="/shop"
-          className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+          className="bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90"
         >
           Browse the catalogue
         </Link>
@@ -116,7 +116,7 @@ export default async function OrderSuccessPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
-      <div className="border-l-4 border-stock bg-white px-6 py-8">
+      <div className="border-l-4 border-stock bg-surface px-6 py-8">
         <p className="font-mono text-xs text-steel">ORDER RECEIVED · SAVED IN THE DATABASE</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           {isPaid ? "Thanks — your order is paid." : "Thanks — your order is in."}
@@ -230,7 +230,7 @@ export default async function OrderSuccessPage({
         </Link>
         <Link
           href="/shop"
-          className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+          className="bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90"
         >
           Continue shopping
         </Link>

@@ -24,7 +24,14 @@
       "category": "unit",
       "command": "npm test",
       "required": true,
-      "summary": "Vitest suite passes with no failing test files."
+      "summary": "Vitest suite passes. Includes tests/theme.test.ts, which parses the pre-paint theme/scheme script and executes it, so a syntax error there cannot ship silently."
+    },
+    {
+      "id": "color-contrast-audit",
+      "category": "security",
+      "command": "node scripts/color-contrast-audit.mjs",
+      "required": true,
+      "summary": "Every colour pairing the UI renders clears its WCAG threshold in all four theme-by-scheme combinations, and every audited hex is confirmed present in app/globals.css so the numbers cannot describe a palette the site does not use."
     },
     {
       "id": "build",
@@ -39,7 +46,31 @@
       "command": "npm run test:e2e",
       "required": false,
       "enableWhenEnv": "FORGE_E2E",
-      "summary": "Playwright critical-journey test. Skipped unless FORGE_E2E=1 because it needs a running dev server."
+      "summary": "Playwright critical-journey test plus the axe scan of all four theme-and-scheme combinations. Skipped unless FORGE_E2E=1 because it needs a running dev server."
+    },
+    {
+      "id": "apple-variant-compiles",
+      "category": "build",
+      "command": "node scripts/check-apple-variant.mjs",
+      "required": true,
+      "dependsOn": ["build"],
+      "summary": "The custom `apple:` Tailwind variant and the [data-theme=\"apple\"] token block are present in the compiled CSS. Tailwind drops an unknown variant silently, so without this the theme can build, pass, and do nothing."
+    },
+    {
+      "id": "dark-scheme-tokens-compile",
+      "category": "build",
+      "command": "node scripts/check-appearance-tokens.mjs",
+      "required": true,
+      "dependsOn": ["build"],
+      "summary": "Both dark-scheme token blocks and the color-scheme declarations survive compilation. The dark palettes live only in CSS, so nothing else in the build would notice if they were dropped."
+    },
+    {
+      "id": "product-artwork",
+      "category": "build",
+      "command": "node scripts/shoot-product-art.mjs",
+      "required": false,
+      "enableWhenEnv": "FORGE_E2E",
+      "summary": "Every product image paints a visible range and real shading, and inverts between light and dark. Needs a running dev server, so it is gated with the e2e check rather than run on every verify."
     },
     {
       "id": "secrets-in-bundle",

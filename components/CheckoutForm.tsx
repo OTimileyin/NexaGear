@@ -40,7 +40,7 @@ export function CheckoutForm({
 
   if (items.length === 0) {
     return (
-      <div className="border-l-4 border-drafting bg-white px-6 py-8">
+      <div className="border-l-4 border-drafting bg-surface px-6 py-8">
         <h2 className="font-medium">Nothing to check out</h2>
         <p className="mt-2 text-sm text-ink/75">
           Your cart is empty. Add gear first — this page will be ready when you
@@ -48,7 +48,7 @@ export function CheckoutForm({
         </p>
         <Link
           href="/shop"
-          className="mt-4 inline-block bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+          className="mt-4 inline-block bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90"
         >
           Browse gear
         </Link>
@@ -113,7 +113,7 @@ export function CheckoutForm({
   }
 
   const inputClass = (name: keyof CheckoutFields) =>
-    `mt-1 w-full border bg-white px-3 py-2 text-sm ${
+    `mt-1 w-full border bg-surface px-3 py-2 text-sm ${
       errors[name] ? "border-signal" : "border-ink/30"
     }`;
 
@@ -224,7 +224,7 @@ export function CheckoutForm({
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 w-full bg-signal px-6 py-3 text-sm font-semibold text-white hover:bg-signal/90 disabled:cursor-not-allowed disabled:bg-steel sm:w-auto"
+          className="mt-2 w-full bg-signal px-6 py-3 text-sm font-semibold text-paper hover:bg-signal/90 disabled:cursor-not-allowed disabled:bg-steel sm:w-auto"
         >
           {submitting ? "Placing order…" : `Pay ${formatMoney(subtotal)}`}
         </button>

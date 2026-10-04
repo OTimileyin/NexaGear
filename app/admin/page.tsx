@@ -231,7 +231,7 @@ function Shell({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-l-4 border-drafting bg-white px-4 py-3">
+    <div className="border-l-4 border-drafting bg-surface px-4 py-3">
       <dt className="font-mono text-[11px] text-steel">{label}</dt>
       <dd className="mt-1 text-xl font-semibold">{value}</dd>
     </div>

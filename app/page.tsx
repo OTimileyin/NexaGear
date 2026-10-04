@@ -30,34 +30,34 @@ export default async function HomePage() {
   const isEmpty = data.featured.length === 0 && data.categories.length === 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-6">
+    <div className="mx-auto max-w-5xl px-6 apple:max-w-6xl">
       <div className="pt-8">
         <SampleDataNotice />
       </div>
 
       {/* Hero */}
-      <section className="border-b border-ink/15 py-16 sm:py-24">
-        <p className="font-mono text-xs tracking-wide text-steel">
+      <section className="border-b border-ink/15 py-16 sm:py-24 apple:border-b-0 apple:py-24 apple:text-center">
+        <p className="font-mono text-xs tracking-wide text-steel apple:hidden">
           CATALOGUE 2026 · 7 CATEGORIES · SPEC-FIRST GEAR
         </p>
-        <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+        <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl apple:mx-auto apple:mt-0 apple:max-w-4xl apple:text-6xl apple:leading-[1.05]">
           Gear that earns its desk space.
         </h1>
-        <p className="mt-4 max-w-xl text-ink/75">
+        <p className="mt-4 max-w-xl text-ink/75 apple:mx-auto apple:mt-6 apple:max-w-2xl apple:text-lg">
           Keyboards, hubs, power, audio, and electronics kits for developers,
           makers, and robotics learners — described like the datasheets you
           already read.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-3 apple:justify-center">
           <Link
             href="/shop"
-            className="bg-signal px-5 py-3 text-sm font-semibold text-white hover:bg-signal/90"
+            className="bg-signal px-5 py-3 text-sm font-semibold text-paper hover:bg-signal/90 apple:rounded-full apple:px-7 apple:py-3.5 apple:text-base"
           >
             Browse the catalogue
           </Link>
           <Link
             href="/shop"
-            className="border border-ink px-5 py-3 text-sm font-medium hover:bg-ink hover:text-paper"
+            className="border border-ink px-5 py-3 text-sm font-medium hover:bg-ink hover:text-paper apple:rounded-full apple:border-0 apple:bg-surface apple:text-base"
           >
             All categories
           </Link>
@@ -72,15 +72,14 @@ export default async function HomePage() {
         <>
           {/* Featured */}
           {data.featured.length > 0 && (
-            <section className="py-12" aria-labelledby="featured-heading">
-              <div className="flex items-baseline justify-between border-b border-steel/50 pb-2">
-                <h2 id="featured-heading" className="text-lg font-semibold">
-                  Featured parts
-                </h2>
-                <span className="font-mono text-[11px] text-steel">
-                  SELECTED BY THE BENCH
-                </span>
-              </div>
+            <section className="py-12" aria-labelledby="featured-heading"><div className="flex items-baseline justify-between border-b border-steel/50 pb-2 apple:border-b-0">
+                  <h2 id="featured-heading" className="text-lg font-semibold apple:text-2xl">
+                    Featured parts
+                  </h2>
+                  <span className="font-mono text-[11px] text-steel apple:hidden">
+                    SELECTED BY THE BENCH
+                  </span>
+                </div>
               <div className="mt-8">
                 <ProductGrid products={data.featured} />
               </div>
@@ -88,30 +87,31 @@ export default async function HomePage() {
           )}
 
           {/* Categories */}
-          <section className="py-12" aria-labelledby="categories-heading">
-            <div className="flex items-baseline justify-between border-b border-steel/50 pb-2">
-              <h2 id="categories-heading" className="text-lg font-semibold">
-                Categories
-              </h2>
-              <span className="font-mono text-[11px] text-steel">
-                {String(data.categories.length).padStart(2, "0")} GROUPS
-              </span>
-            </div>
-            <ul className="mt-4 divide-y divide-steel/40">
-              {data.categories.map((category) => (
-                <li key={category}>
-                  <Link
-                    href="/shop"
-                    className="flex items-center justify-between py-4 hover:text-drafting"
-                  >
-                    <span className="font-medium">{category}</span>
-                    <span className="font-mono text-xs text-steel">
-                      VIEW →
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <section className="py-12" aria-labelledby="categories-heading"><div className="flex items-baseline justify-between border-b border-steel/50 pb-2 apple:border-b-0">
+                <h2 id="categories-heading" className="text-lg font-semibold">
+                  Categories
+                </h2>
+                <span className="font-mono text-[11px] text-steel apple:hidden">
+                  {String(data.categories.length).padStart(2, "0")} GROUPS
+                </span>
+              </div>
+              {/* Datasheet: a ruled index. Apple: a wrap of pill chips — the
+                  same content, laid out the way that language sets it. */}
+              <ul className="mt-4 divide-y divide-steel/40 apple:mt-6 apple:flex apple:flex-wrap apple:gap-3 apple:divide-y-0">
+                {data.categories.map((category) => (
+                  <li key={category}>
+                    <Link
+                      href="/shop"
+                      className="flex items-center justify-between py-4 hover:text-drafting apple:rounded-full apple:bg-surface apple:px-5 apple:py-2.5 apple:text-sm apple:hover:bg-ink apple:hover:text-paper"
+                    >
+                      <span className="font-medium">{category}</span>
+                      <span className="font-mono text-xs text-steel apple:hidden">
+                        VIEW →
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
           </section>
         </>
       )}

@@ -9,7 +9,7 @@ export function ProductGrid({
   headingLevel?: "h2" | "h3";
 }) {
   return (
-    <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 apple:gap-x-8 apple:gap-y-14">
       {products.map((product) => (
         <li key={product.id}>
           <ProductCard product={product} headingLevel={headingLevel} />

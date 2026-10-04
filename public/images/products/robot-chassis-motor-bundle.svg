@@ -1,21 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
-  <rect width="400" height="300" fill="#F6F3EC"/>
-  <rect x="8" y="8" width="384" height="284" fill="none" stroke="#8A939E" stroke-width="1"/>
-  <g fill="none" stroke="#1A1D21" stroke-width="2" stroke-linejoin="round">
-    <path d="M140 100h120l24 30v46l-24 30H140l-24-30v-46z"/>
-    <circle cx="122" cy="153" r="26"/>
-    <circle cx="122" cy="153" r="12"/>
-    <circle cx="278" cy="153" r="26"/>
-    <circle cx="278" cy="153" r="12"/>
-    <circle cx="200" cy="206" r="10"/>
-    <rect x="172" y="122" width="56" height="30" rx="3"/>
-    <path d="M180 132h40M180 142h28" stroke-width="1.2"/>
-    <path d="M154 168h92M154 180h92" stroke-width="1.2"/>
-    <path d="M148 116l10 10M252 116l-10 10" stroke-width="1.2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <!-- Shape and shading only; rendered as a CSS mask so it follows the theme. -->
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".95"/>
+      <stop offset=".55" stop-color="#000" stop-opacity=".66"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".42"/>
+    </linearGradient>
+    <linearGradient id="tyre" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".6"/>
+      <stop offset=".5" stop-color="#000" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".6"/>
+    </linearGradient>
+    <radialGradient id="hub" cx=".4" cy=".35" r=".6">
+      <stop offset="0" stop-color="#000" stop-opacity=".98"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".7"/>
+    </radialGradient>
+  </defs>
+
+  <!-- two drive wheels behind the chassis -->
+  <circle cx="110" cy="196" r="46" fill="url(#tyre)"/>
+  <circle cx="290" cy="196" r="46" fill="url(#tyre)"/>
+
+  <!-- motor cans bolted between plate and wheels -->
+  <rect x="126" y="168" width="54" height="56" rx="10" fill="url(#plate)"/>
+  <rect x="220" y="168" width="54" height="56" rx="10" fill="url(#plate)"/>
+  <g stroke="#000" stroke-opacity=".4" stroke-width="2">
+    <path d="M134 178h38M134 190h38M134 202h38M134 214h38"/>
+    <path d="M228 178h38M228 190h38M228 202h38M228 214h38"/>
   </g>
-  <g stroke="#2254A3" stroke-width="1">
-    <path d="M304 127h46"/><path d="M342 123l6 4-6 4"/>
+
+  <!-- wheel hubs -->
+  <circle cx="110" cy="196" r="17" fill="url(#hub)"/>
+  <circle cx="290" cy="196" r="17" fill="url(#hub)"/>
+
+  <!-- chassis plate sitting above the drive line -->
+  <path d="M96 126h208l16 22v26H80v-26z" fill="url(#plate)"/>
+  <rect x="80" y="148" width="240" height="26" rx="6" fill="#000" fill-opacity=".3"/>
+
+  <!-- caster at the front -->
+  <path d="M296 174h34l6 22h-46z" fill="#000" fill-opacity=".75"/>
+  <circle cx="313" cy="206" r="15" fill="url(#tyre)"/>
+
+  <!-- mounting holes and a raised sensor mast -->
+  <g fill="#000" fill-opacity=".4">
+    <circle cx="112" cy="140" r="6"/><circle cx="200" cy="140" r="6"/>
+    <circle cx="288" cy="140" r="6"/>
   </g>
-  <text x="352" y="119" text-anchor="end" font-family="monospace" font-size="11" fill="#2254A3">GEAR MOTORS</text>
-  <text x="20" y="284" font-family="monospace" font-size="10" fill="#8A939E">NexaGear · NG-011</text>
+  <rect x="188" y="86" width="24" height="42" rx="8" fill="#000" fill-opacity=".85"/>
+  <circle cx="200" cy="80" r="13" fill="url(#hub)"/>
+
+  <!-- contact shadow -->
+  <ellipse cx="200" cy="252" rx="140" ry="9" fill="#000" fill-opacity=".15"/>
 </svg>

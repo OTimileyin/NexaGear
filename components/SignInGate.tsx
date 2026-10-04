@@ -41,7 +41,7 @@ export function SignInGate({ next }: { next: string }) {
         type="button"
         onClick={handleSignIn}
         disabled={pending}
-        className="mt-6 bg-signal px-6 py-3 text-sm font-semibold text-white hover:bg-signal/90 disabled:opacity-60"
+        className="mt-6 bg-signal px-6 py-3 text-sm font-semibold text-paper hover:bg-signal/90 disabled:opacity-60"
       >
         {pending ? "Redirecting to Google…" : "Continue with Google"}
       </button>
