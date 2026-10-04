@@ -26,11 +26,31 @@ order and nothing else is affected.
 
 Two traps in `supabase db query --linked`, both hit while writing this:
 
-1. It **truncates multi-line SQL at the first newline**. A `create function`
-   sent from a file fails with the misleading `42P13: no language specified` —
-   the identical statement on one line succeeds. Hence `tr '\n' ' '`.
+1. It **truncates multi-line SQL at the first newline** when the SQL is passed
+   *as an argument*. A `create function` sent from a file fails with the
+   misleading `42P13: no language specified` — the identical statement on one
+   line succeeds.
 2. It **parses a leading `--` comment as a flag** and fails with
-   `Unrecognized flag`. Hence stripping comment lines first.
+   `Unrecognized flag` when passed as an argument.
+
+Both traps come from passing SQL **as an argument**. **Prefer `--file`** and
+neither applies:
+
+```bash
+npx --no-install supabase db query --linked --file path/to/script.sql
+```
+
+`--file` keeps comments, keeps newlines, and has no length limit — passing SQL
+as an argument is also capped by the operating system's command-line limit, so
+`supabase/verify/0011_server_cart.sql` **cannot** be run the old way at all
+("The command line is too long"). The `tr '\n' ' '` recipe below is kept only
+for historical context and for one-liners.
+
+Control worth knowing: with `--file`, a failing script *does* report its error
+(`unexpected status 400: ... ERROR: P0001: <your message>`). So silence from a
+`--file` run means it passed, rather than that it never executed — but a script
+that prints a row on success is better evidence than silence, and 0011 ends with
+`select 'SERVER CART TESTS PASSED'` for exactly that reason.
 
 ## What the seed guarantees
 

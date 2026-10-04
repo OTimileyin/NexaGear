@@ -251,4 +251,45 @@ recalling. Nothing here is a new feature except where a required row was false.
   unpushed; the live site still serves the previous build.
 - `[ ]` **Simultaneous-user RLS isolation — UNVERIFIED.** Needs a second Clerk
   account; a single authenticated request is verified (D20/D21), two concurrent
-  ones are not.
+  ones are not. *Superseded in part by Phase 11, which proves it behaviourally
+  for `cart_items`.*
+
+---
+
+## Phase 11 — Lesson 3: the cart becomes shared state (2026-10-04)
+
+**Goal:** satisfy the Lesson 3 requirement that a signed-in account sees the
+same cart on the website and on a phone. Newest-instruction-wins, so this
+supersedes the `localStorage`-only cart rule rather than being blocked by it —
+recorded as D35, with `AGENTS.md` §2 amended in the same commit.
+
+**Delivered so far:**
+
+- `supabase/migrations/0011_server_cart.sql` — `cart_items` keyed to Clerk's
+  `sub`, RLS on all four verbs, `anon` revoked, realtime publication and
+  `replica identity full`, and `merge_guest_cart` for the on-sign-in merge.
+- `supabase/verify/0011_server_cart.sql` — 12 behavioural assertions.
+
+**Evidence log:**
+
+- `[x]` **Migration applied to the live project** (linked, via
+  `db query --linked --file`).
+- `[x]` **`SERVER CART TESTS PASSED`, `leftover_rows: 0`.** The cross-identity
+  assertions ran as the `authenticated` role with a real JWT claim: another
+  user's cart is invisible, writing into it is refused by `WITH CHECK`, and an
+  update aimed at it filters to zero rows via `USING`. **This is the first
+  two-identity RLS proof in the project** — the deployment checklist's
+  simultaneous-user row is now marked partially verified for the cart, with
+  `orders`/`profiles` still open.
+- `[x]` **Realtime membership is asserted**, not assumed: the verify fails if
+  `cart_items` is missing from the `supabase_realtime` publication, because that
+  is the line whose loss would silently stop sync.
+- `[x]` **Tooling correction.** `supabase db query --linked --file <path>` exists
+  and supersedes the documented strip-comments-and-flatten-newlines workaround
+  for file-based scripts. This script cannot run the old way at all (6.4 KB
+  flattened, over the Windows command-line limit). A control test confirmed a
+  failing script reports its error through `--file`, so silence is success.
+- `[ ]` **The website does not use the server cart yet** — next step.
+- `[ ]` **No mobile app exists yet** — the Expo client, and the physical-phone
+  demonstration the task requires, are both outstanding. Device verification
+  will be owner-performed and recorded as such, never claimed from here.

@@ -21,7 +21,7 @@ Resolve conflicts in this order. Never silently pick a winner when two authorita
 - **Styling:** Tailwind CSS only — no CSS Modules, styled-components, or inline style libraries
 - **Database/auth:** Supabase (Postgres + Auth + RLS + Google OAuth)
 - **Email:** Mailgun, called server-side over its REST API
-- **Cart:** React context + `localStorage` (no state library)
+- **Cart:** React context + a **server-backed cart** (`cart_items`, RLS-scoped to the Clerk user) for signed-in users, with `localStorage` kept **only** for signed-out guests and merged on sign-in. No state library. This replaced the original "React context + `localStorage`" rule in D35 because Lesson 3 requires the same cart on two devices; do not revert it to local-only.
 - **Hosting:** Vercel
 - **Tests:** Vitest (+ React Testing Library); Playwright for the critical journey
 
