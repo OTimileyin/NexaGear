@@ -301,3 +301,64 @@ recorded as D35, with `AGENTS.md` §2 amended in the same commit.
   and `updates.url` in v1, install v1 on a phone, publish an update, and confirm
   the old install picks it up. Code signing is paid-tier only, so on free tier
   the update channel is unsigned and that must be said rather than glossed.
+
+---
+
+## Phase 12 — Performance profile, before the mobile app (2026-10-04)
+
+**Trigger:** a 13-item performance checklist covering defer-startup-work,
+image compression/caching, lazy loading, pagination, virtualization, re-render
+prevention, parallel requests, query optimisation, tap/scroll blocking, and
+profiling the production build with before/after figures.
+
+**Finding that reframed the request:** **11 of the 13 items target a mobile app
+that does not exist yet.** There is no bundle to profile, no tap to block and no
+list to virtualize, so those are marked blocked rather than answered with
+invented numbers. The remaining items were measured against the production
+website, which is real and shipped.
+
+**Measured before (`scripts/profile-web.mjs`, `next start`, production build):**
+
+| Route | Longest single block | Total blocking | Script transferred | DOM nodes |
+|---|---|---|---|---|
+| `/` | 92 ms | 147 ms | 405.3 KB | 199 |
+| `/shop` | **158 ms** | **313 ms** | 405.3 KB | 257 |
+| `/product/…` | 84 ms | 84 ms | 405.7 KB | 135 |
+| `/cart` | 78 ms | 179 ms | 405.7 KB | 100 |
+
+CLS **0.0000** everywhere; images + fonts 49–60 KB.
+
+**Evidence log:**
+
+- `[x]` **A measurement bug caught by its own control.** The first profiler
+  queried `getEntriesByType("long-task")`; the entry type is `"longtask"`, no
+  hyphen. That call returns an empty array forever, so it reported **zero
+  main-thread blocking on every route** — a check that cannot fail, which reads
+  identically to a clean result. Fixed to a `PerformanceObserver` installed
+  before navigation via `addInitScript`, and given `PROFILE_CONTROL=1`, which
+  injects a known 150 ms block. The control detected it *and* revealed the
+  blocking the typo had hidden. This is the same class of error as the D33
+  measurement bugs, and the same fix: prove the instrument can see a known
+  signal.
+- `[x]` **Already true, verified rather than assumed:** parallel requests
+  (`app/page.tsx:25` `Promise.all`); re-render isolation (external store read
+  through `useSyncExternalStore` in `lib/cart/store.ts`).
+- `[x]` **N/A with the number that proves it:** image compression — 11 SVG
+  files, **48 KB total, zero raster images**; pagination — **11 products, 9
+  orders, 15 order_items** in the database (revisit point >100 products already
+  recorded); virtualization — longest list is 11 cards / 257 DOM nodes; slow
+  queries — none exist, the product lookup is an `Index Scan using
+  products_slug_key` at **2.2 ms** end-to-end.
+- `[x]` **The one real bottleneck, and it is two checklist items at once:**
+  "defer startup work" and "profile the production build" are the same finding.
+  **405 KB of script loads on every route, 53% of it Clerk's prebuilt UI bundle,
+  on routes that render no Clerk component.** The 84–158 ms blocks are its
+  symptom.
+- `[ ]` **The Clerk deferral was offered and postponed by the owner to after the
+  Lesson 3 demo** — it is an auth-affecting change that cannot be verified on the
+  signed-in path from here. No optimisation was attempted, so there is **no
+  after** for any item yet, and none will be claimed.
+- `[ ]` **Every app-side item remains blocked on the app existing.**
+
+**Next:** the Lesson 3 mobile app is the deadline-critical path; the profile is
+the before-state it should be re-measured against.
