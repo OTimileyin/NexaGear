@@ -10,6 +10,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ThemeScript } from "@/components/ThemeScript";
 import { CartSheet } from "@/components/CartSheet";
+import { CartSync } from "@/components/CartSync";
 import { CartProvider } from "@/lib/cart/cart-context";
 import { CartSheetProvider } from "@/lib/cart-sheet";
 import { siteUrl } from "@/lib/seo";
@@ -79,6 +80,13 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
+          {/*
+            Connects the cart store to the signed-in account's server cart
+            (D35). It renders nothing; it is mounted here so that every route —
+            including the cart sheet, which is part of the layout — reads the
+            same cart the phone sees.
+          */}
+          <CartSync />
           <CartProvider>
             {/* The sheet's open/closed state is UI-only and deliberately lives
                 outside the cart data layer, so nothing here changes what is
