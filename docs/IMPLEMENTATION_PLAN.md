@@ -425,9 +425,21 @@ in one take. Decision and reasoning: **D37**. Deadline: **2026-10-05 23:59 WAT**
   `application/octet-stream`, first bytes `504b 0304` (`PK\x03\x04` — a real
   signed ZIP/APK), and a `Content-Range` total of 110,745,385 bytes, with no
   authentication required to download it.
-- `[x]` **The root gates still pass with `mobile/` present** — `mobile/` is
-  excluded from the root `tsconfig.json` and `eslint.config.mjs`, and
-  `npm run verify` was re-run (see the run recorded below) rather than assumed.
+- `[x]` **The root gates still pass with `mobile/` present**, and the e2e gate
+  was run rather than skipped: **16/16 Playwright tests green** (3.9m), including
+  the axe scan of all four theme-and-scheme combinations and the wedge journey
+  (browse → product → **add to cart** → subtotal → checkout gate). That matters
+  beyond the mobile app: `b7feeaa` rewrote the cart store, and this is the first
+  time the **guest** cart path has been exercised since. Gate results as
+  measured: `typecheck` 24.4s · `lint` 186.0s · **189/189 unit tests** ·
+  `build` 224.8s · contrast audit · apple variant · dark-scheme tokens ·
+  secrets-in-bundle. Two honest notes: the first `npm run verify` reported
+  `unit: failed` with *"Timeout waiting for worker to respond"* — a Vitest pool
+  timeout under load, not an assertion — and 189/189 passed on a quiet re-run;
+  and the same run's wedge journey timed out at 30s against a 25s journey, which
+  the failure's own page snapshot showed had **already rendered the checkout
+gate**. That is a harness timeout, and `tests/e2e/wedge.spec.ts` now states its
+  own 120s budget with that diagnosis written down.
 
 ### What is NOT verified — stated plainly, because the submission depends on it
 

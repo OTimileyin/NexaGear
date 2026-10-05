@@ -28,6 +28,14 @@ test.beforeEach(() => {
 });
 
 test("wedge: browse → product → cart → checkout auth gate", async ({ page }) => {
+  // Dev mode compiles a route the first time it is hit, and this test visits
+  // three of them (`/shop`, `/product/*`, `/checkout`) inside one journey. A
+  // measured run is ~25s against a 30s default, so on a loaded machine the
+  // journey fails on compile latency while the checkout gate it is asserting
+  // has already rendered — which is how this was diagnosed, from the failure's
+  // own page snapshot. The crawl below sets its own timeout for the same reason.
+  test.setTimeout(120_000);
+
   // Catalogue renders from the database
   await page.goto("/shop");
   await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
