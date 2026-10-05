@@ -9,8 +9,8 @@ here is a claim that something is done — the state column is the point.
 | Deliverable | State | What it needs |
 |---|---|---|
 | GitHub **PR link** for a team contribution | Owner says not required | Recorded because the brief lists it: a branch pushed to GitHub and a PR opened against the team repo. The owner has since said the PR deliverable was a mistake, so it is **not** on the critical path — but `gh` is not authenticated here and `git push` hangs on an invisible credential prompt, so even the branch push is an **owner action** in their own terminal. |
-| **APK download link** (Drive or similar) | **BUILD IN PROGRESS** | The app exists, the EAS project is linked and an APK-producing profile is configured. Build `a4c773f9` is on EAS: https://expo.dev/accounts/agenttim/projects/nexagear-mobile/builds/a4c773f9-2e58-47b1-a934-e12df720373c — not yet downloaded, not yet installed. Expo Go cannot produce an APK, so the demo path recorded in D36 (Expo Go) could never have satisfied this submission. |
-| **Repository link** | Available | The `nexagear` repo. **16 commits are still unpushed**, so anything graded from the remote is behind this work. |
+| **APK download link** (Drive or similar) | **APK BUILT — needs uploading to Drive** | Build `a4c773f9` finished 03:24:31 on 2026-10-05 (20 min, free tier). Artifact: https://expo.dev/artifacts/eas/REp6MzDRWHEFwGXxrMUQmeDjAANGbfIEejNWM2O6r0k.apk — **110.7 MB**, fetched and confirmed a real signed APK (HTTP 200, ZIP `PK\x03\x04` header), no account needed to download. **Not yet installed on a phone.** Expo Go could never have satisfied this submission. |
+| **Repository link** | Available and current | The `nexagear` repo. The owner pushed through `b7feeaa`, so the remote carries the server cart; only the mobile-app commits are still local. |
 | **Video demonstration**, one continuous take, physical device | **BLOCKED** | Web server cart (done) + an installed APK + a demo account. See §3. |
 
 ## 2. The APK changed a recorded decision — and the change is now made
@@ -44,7 +44,7 @@ signature verification.
 | 1. Open the web app, sign in a **new** account | Deployed site + Clerk. Live Google sign-in verified (D18). | works |
 | 2. Show the signed-in state | Header auth region | works |
 | 3. **Add an item to the cart on the web** | **The website must use the server cart** — it now does: `localStorage` only for guests, `cart_items` for signed-in shoppers, merged on sign-in, and the website subscribes as well as writes | **DONE** (commit `b7feeaa`, `lib/cart/server-bridge.ts`; **live signed-in round trip still unverified**) |
-| 4. Open the mobile app | An APK installed on the phone | app written + typechecked; **build in progress** |
+| 4. Open the mobile app | An APK installed on the phone | **APK built** (`a4c773f9`, 110.7 MB, downloadable); not yet installed |
 | 5. **Log in with the same account** | Clerk Expo, same instance as the web. The custom flow uses email + password, so the account **must have a password** — a Google-only account cannot sign in here | code written; sign-in API contract exercised against the live instance (see §5) |
 | 6. **The web-added item is in the mobile cart** | The app **fetches the cart on open *and* subscribes to realtime**. A subscription alone shows an empty cart if the item was added before the app connected — this is the step most likely to fail on camera. | code written (`load()` then `subscribe()`, in that order); **not yet exercised on a device** |
 | 7. Add another item from the mobile app | Server cart write + RLS | backend proven (`0011` verify, 12 assertions); client written, **not yet exercised** |
@@ -56,10 +56,14 @@ signature verification.
 1. **Switch the website cart to the server cart** (server-backed when signed in,
    `localStorage` only for guests, merge on sign-in, realtime subscription).
    Outstanding since D35; it is the first domino.
-2. **Push and redeploy.** **14 commits are unpushed** and the live site is behind
-   them, so the deployed app cannot demonstrate any of this yet.
+2. **Push and redeploy.** **Done and verified, not assumed** — the owner pushed
+   through `b7feeaa`, and `https://nexagear.vercel.app` was then checked: its
+   client bundle now contains `cart_items`, so the live site is the server-cart
+   build rather than the old `localStorage` one. Steps 3 and 8 therefore have a
+   deployed website to run against. Only the mobile-app commits remain local.
 3. **Scaffold the Expo app**, with `expo-updates` included (see §2).
-4. **Build the APK** (submitted to EAS, `a4c773f9`), install it on the phone, upload it to Drive.
+4. **Build the APK** (**done**, `a4c773f9`). Remaining: install it on the phone,
+   upload the artifact to Drive, and paste that link into the submission.
 5. **Rehearse the nine steps once, end to end, in one take**, then record.
 
 ## 5. Account choice for the demo — measured, not assumed

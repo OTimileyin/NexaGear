@@ -414,20 +414,26 @@ in one take. Decision and reasoning: **D37**. Deadline: **2026-10-05 23:59 WAT**
   `supabase_realtime` publication (without it "instantly appears" is false and
   the app looks broken on camera). The `quantity` CHECK came back as
   `>= 1 AND <= 99` — the same numbers as `MIN_QTY`/`MAX_QTY`.
-- `[x]` **EAS project linked and an APK-producing profile exists.**
+- `[x]` **EAS project linked, and the APK was built and fetched.**
   `@agenttim/nexagear-mobile`, project id `9d86b236-318a-424f-b356-adabcb69e9df`;
   `eas.json` has a `preview` profile with `android.buildType: "apk"` and
   `distribution: "internal"`; the Android keystore was generated server-side
   during submission (no local `keytool`, no local build possible on this machine
-  — no JDK, no Android SDK).
+  — no JDK, no Android SDK). Build `a4c773f9` ran 03:04:15 → 03:24:31 (**20 min**
+  on free tier), reported `runtimeVersion 1.0.0` / `versionCode 1`, and produced
+  **110.7 MB**. The artifact was then **fetched rather than trusted**: HTTP 200,
+  `application/octet-stream`, first bytes `504b 0304` (`PK\x03\x04` — a real
+  signed ZIP/APK), and a `Content-Range` total of 110,745,385 bytes, with no
+  authentication required to download it.
 - `[x]` **The root gates still pass with `mobile/` present** — `mobile/` is
   excluded from the root `tsconfig.json` and `eslint.config.mjs`, and
   `npm run verify` was re-run (see the run recorded below) rather than assumed.
 
 ### What is NOT verified — stated plainly, because the submission depends on it
 
-- `[ ]` **The APK: never installed, never opened.** Build `a4c773f9` was
-  *submitted*; an artifact that has not been installed is not a working app.
+- `[ ]` **The APK has never been installed or opened on a phone.** It exists,
+  downloads and is a well-formed signed APK — but an artifact nobody has run is
+  not a working app, and the 110.7 MB is not evidence that it launches.
 - `[ ]` **A successful sign-in and the two-device cart round trip on the phone.**
   No Clerk account exists that this environment can authenticate as — creating
   one needs an inbox — so the one flow the video is *about* has not been
