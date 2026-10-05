@@ -1,0 +1,19 @@
+# .replit — Replit configuration for the NexaGear website
+#
+# The website is a Next.js 16 app at the repository root.
+# The mobile app lives in mobile/ and is started in a SECOND shell — see
+# docs/REPLIT_GUIDE.md for the full workflow.
+#
+# Environment variables MUST be set via Replit → Tools → Secrets, NOT here.
+# See docs/REPLIT_GUIDE.md for the exact list of secrets needed.
+
+run = """
+npm install
+npm run dev
+"""
+
+entrypoint = "app/page.tsx"
+
+[env]
+# Placeholder defaults — override every one in Replit → Tools → Secrets.
+NPM_CONFIG_UPDATE_NOTIFIER = "false"
