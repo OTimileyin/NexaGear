@@ -9,7 +9,7 @@ here is a claim that something is done — the state column is the point.
 | Deliverable | State | What it needs |
 |---|---|---|
 | GitHub **PR link** for a team contribution | Owner says not required | Recorded because the brief lists it: a branch pushed to GitHub and a PR opened against the team repo. The owner has since said the PR deliverable was a mistake, so it is **not** on the critical path — but `gh` is not authenticated here and `git push` hangs on an invisible credential prompt, so even the branch push is an **owner action** in their own terminal. |
-| **APK download link** (Drive or similar) | **APK BUILT — needs uploading to Drive** | Build `a4c773f9` finished 03:24:31 on 2026-10-05 (20 min, free tier). Artifact: https://expo.dev/artifacts/eas/REp6MzDRWHEFwGXxrMUQmeDjAANGbfIEejNWM2O6r0k.apk — **110.7 MB**, fetched and confirmed a real signed APK (HTTP 200, ZIP `PK\x03\x04` header), no account needed to download. **Not yet installed on a phone.** Expo Go could never have satisfied this submission. |
+| **APK download link** (Drive or similar) | **DO NOT UPLOAD THE FIRST APK — it has no keys. Corrected build `418d08b7` is queued.** | The first artifact (`a4c773f9`, 110.7 MB, a well-formed signed ZIP) was **opened and found to be unusable on a phone**: its bundle contains none of the three values the app needs, because `mobile/.env` is gitignored and the EAS `preview` environment had no variables at all. On a device it would have rendered *"This build cannot reach the shop"*. **D38** records the evidence, the fix and the mistake in the verification that let it through. All three values are now set as EAS environment variables, and the rebuild's own log confirms they were loaded. Its artifact link goes here — and is re-checked the same way — only once it finishes. |
 | **Repository link** | Available and current | The `nexagear` repo. The owner pushed through `b7feeaa`, so the remote carries the server cart; only the mobile-app commits are still local. |
 | **Video demonstration**, one continuous take, physical device | **BLOCKED** | Web server cart (done) + an installed APK + a demo account. See §3. |
 
@@ -44,7 +44,7 @@ signature verification.
 | 1. Open the web app, sign in a **new** account | Deployed site + Clerk. Live Google sign-in verified (D18). | works |
 | 2. Show the signed-in state | Header auth region | works |
 | 3. **Add an item to the cart on the web** | **The website must use the server cart** — it now does: `localStorage` only for guests, `cart_items` for signed-in shoppers, merged on sign-in, and the website subscribes as well as writes | **DONE** (commit `b7feeaa`, `lib/cart/server-bridge.ts`; **live signed-in round trip still unverified**) |
-| 4. Open the mobile app | An APK installed on the phone | **APK built** (`a4c773f9`, 110.7 MB, downloadable); not yet installed |
+| 4. Open the mobile app | An APK installed on the phone | **Rebuild `418d08b7` in the EAS queue**; the first build's artifact was keyless (D38) and must not be installed or uploaded. Nothing is installed yet. |
 | 5. **Log in with the same account** | Clerk Expo, same instance as the web. The custom flow uses email + password, so the account **must have a password** — a Google-only account cannot sign in here | code written; sign-in API contract exercised against the live instance (see §5) |
 | 6. **The web-added item is in the mobile cart** | The app **fetches the cart on open *and* subscribes to realtime**. A subscription alone shows an empty cart if the item was added before the app connected — this is the step most likely to fail on camera. | code written (`load()` then `subscribe()`, in that order); **not yet exercised on a device** |
 | 7. Add another item from the mobile app | Server cart write + RLS | backend proven (`0011` verify, 12 assertions); client written, **not yet exercised** |
@@ -62,8 +62,10 @@ signature verification.
    build rather than the old `localStorage` one. Steps 3 and 8 therefore have a
    deployed website to run against. Only the mobile-app commits remain local.
 3. **Scaffold the Expo app**, with `expo-updates` included (see §2).
-4. **Build the APK** (**done**, `a4c773f9`). Remaining: install it on the phone,
-   upload the artifact to Drive, and paste that link into the submission.
+4. **Build the APK** (**done twice** — the first artifact was keyless and is
+   discarded, D38). Remaining: wait for `418d08b7` to leave the EAS queue, verify
+   its bundle contains the three literals, install it on the phone, upload it to
+   Drive, and paste that link into the submission.
 5. **Rehearse the nine steps once, end to end, in one take**, then record.
 
 ## 5. Account choice for the demo — measured, not assumed
@@ -102,6 +104,14 @@ special handling at all.
 
 ## 6. Traps that would cost the evening
 
+- **If the phone's sign-in fails, the app shows Clerk's own message verbatim** —
+  read it before trying anything else. The native Clerk path (no browser, no
+  Origin header) has never been exercised on this app, and it is the one step
+  whose failure mode cannot be reproduced from this machine. The message names
+  the cause; experimenting live on camera does not.
+- **The first APK link in this document's history is a trap, not a shortcut.** An
+  APK that downloads, opens and installs can still be unable to reach the shop
+  (D38). Check the bundle, not the file size.
 - **Expo Go cannot be submitted.** It is not an APK and has no update channel.
 - **Do not record before the push redeploys.** A stale deployment shows a
   `localStorage` cart and step 8 silently fails.

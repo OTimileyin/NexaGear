@@ -425,6 +425,23 @@ in one take. Decision and reasoning: **D37**. Deadline: **2026-10-05 23:59 WAT**
   `application/octet-stream`, first bytes `504b 0304` (`PK\x03\x04` — a real
   signed ZIP/APK), and a `Content-Range` total of 110,745,385 bytes, with no
   authentication required to download it.
+- `[x]` **The first APK was opened before it was handed to anyone, and it had no
+  keys.** `assets/index.android.bundle` (Hermes bytecode, 4,149,056 bytes) was
+  extracted from the shipped artifact and read directly: the Supabase project ref
+  `uwdbprdvjzliqi`, the `sb_publishable_…` anon key and the `pk_test_…` Clerk
+  publishable key each occur **0 times**, while controls prove the read is valid —
+  `cart_items` occurs once and the app's own guard sentence occurs once. Cause:
+  `mobile/.env` is **gitignored** (`mobile/.gitignore:34`) so it never reached the
+  build server, and the EAS `preview` environment held **no variables at all**;
+  the build's own log says *No environment variables with visibility "Plain text"
+  and "Sensitive" found for the "preview" environment on EAS.* Installed on a
+  phone, that APK would have rendered `_layout.tsx`'s guard screen — *"This build
+  cannot reach the shop"* — which is legible but cannot load the shop, and the
+  shop is what the video demonstrates. Fixed with
+  `eas env:set --environment preview --visibility plaintext --scope project` for
+  the three public values (**D38**), deliberately not committed to `eas.json`.
+  Rebuild `418d08b7` names all three in its own log, which is the line that was
+  missing before; its artifact is verified separately before use.
 - `[x]` **The root gates still pass with `mobile/` present**, and the e2e gate
   was run rather than skipped: **16/16 Playwright tests green** (3.9m), including
   the axe scan of all four theme-and-scheme combinations and the wedge journey
@@ -455,6 +472,7 @@ gate**. That is a harness timeout, and `tests/e2e/wedge.spec.ts` now states its
 - `[ ]` **An actual OTA update delivered to the installed build.** Free tier
   cannot sign updates; D36 recorded that and nothing here changes it.
 
-**Next:** install the APK on a physical phone, create the demo account
-(email + password + username — see `docs/LESSON3_SUBMISSION.md` §5), then run the
-nine steps in one continuous take.
+**Next:** wait for rebuild `418d08b7` to leave the EAS queue, read its bundle for
+the three literals (the check the first artifact failed), install it on a physical
+phone, create the demo account (email + password + username — see
+`docs/LESSON3_SUBMISSION.md` §5), then run the nine steps in one continuous take.
