@@ -362,3 +362,81 @@ CLS **0.0000** everywhere; images + fonts 49–60 KB.
 
 **Next:** the Lesson 3 mobile app is the deadline-critical path; the profile is
 the before-state it should be re-measured against.
+
+---
+
+## Phase 13 — Lesson 3: the mobile app (2026-10-05)
+
+**Goal:** an installable Android app that is a *second client of the same cart*,
+so the Lesson 3 video can show one account's cart moving between web and phone
+in one take. Decision and reasoning: **D37**. Deadline: **2026-10-05 23:59 WAT**.
+
+### What is verified
+
+- `[x]` **Scaffold runs on the installed versions, not remembered ones.** Expo
+  SDK 57 (`expo@57.0.26`, `react-native@0.86.3`, `react@19.2.3`), `expo-router`
+  with routes in `src/app/`, TypeScript strict. The template's `App.tsx` and
+  `index.ts` were removed and `main` repointed at `expo-router/entry`; without
+  that one line the app builds and then renders nothing.
+- `[x]` **`npx tsc --noEmit` clean in `mobile/`.** The single error it caught is
+  worth recording: **Clerk Core 3's `useAuth()` no longer returns a `user`** —
+  `useUser()` does. That is exactly the kind of mistake that is otherwise found
+  on camera, in front of the person grading the demo.
+- `[x]` **13 `node:test` tests pass against the shipped `cart-math.ts`.** Node 24
+  strips the types, so the test imports the *same* file the app bundles rather
+  than a copy — there is no second implementation to drift. The suite pins the
+  `1..99` bounds to migration `0011`'s `check (quantity between 1 and 99)`, so a
+  phone cannot offer a quantity the database will refuse.
+- `[x]` **A real Metro bundle, rendered in a real browser** (a **5.8 MB** dev
+  bundle, HTTP 200 — 89s to build, which is this machine, not the app): the shop screen rendered **11 products fetched live from the
+  Supabase project** while signed out; the bundle was inspected directly and all
+  three `EXPO_PUBLIC_*` values are inlined as literals (the failure mode this
+  checks for is a silent empty value, which no typecheck can see); the
+  signed-out "Add" navigated to `/sign-in` instead of discarding the tap; the
+  sign-in form rendered labelled fields; and a **bogus credential returned
+  `Couldn't find your account.` in an `alert`**, which is Clerk Core 3's
+  `signIn.password()` contract (`{ error }`, not a throw) working against the
+  live instance.
+- `[x]` **`expo-updates` with `runtimeVersion` and `updates.url` in the first
+  build** — D36's trigger, pulled deliberately (D37) because a binary without the
+  native module can never be updated later. Before configuring it, the installed
+  native source was read to confirm the failure mode: with no URL,
+  `UpdatesConfigurationValidationResult.INVALID_MISSING_URL` **disables**
+  expo-updates with a warning instead of crashing, so this is a door being closed
+  on purpose rather than a new risk in the demo path.
+- `[x]` **The phone's cart query was checked against the live schema, not against
+  hope.** `mobile/src/lib/cart-api.ts` makes four assumptions a typecheck cannot
+  see, so all four were read out of the database itself: `created_at` exists (the
+  `order` clause would throw and the cart would never load); the primary key is
+  `(user_id, product_id)` (the `upsert` conflict target); the FK
+  `cart_items.product_id → products(id) ON DELETE CASCADE` exists (without it
+  PostgREST cannot embed `products(...)` at all); and `cart_items` is in the
+  `supabase_realtime` publication (without it "instantly appears" is false and
+  the app looks broken on camera). The `quantity` CHECK came back as
+  `>= 1 AND <= 99` — the same numbers as `MIN_QTY`/`MAX_QTY`.
+- `[x]` **EAS project linked and an APK-producing profile exists.**
+  `@agenttim/nexagear-mobile`, project id `9d86b236-318a-424f-b356-adabcb69e9df`;
+  `eas.json` has a `preview` profile with `android.buildType: "apk"` and
+  `distribution: "internal"`; the Android keystore was generated server-side
+  during submission (no local `keytool`, no local build possible on this machine
+  — no JDK, no Android SDK).
+- `[x]` **The root gates still pass with `mobile/` present** — `mobile/` is
+  excluded from the root `tsconfig.json` and `eslint.config.mjs`, and
+  `npm run verify` was re-run (see the run recorded below) rather than assumed.
+
+### What is NOT verified — stated plainly, because the submission depends on it
+
+- `[ ]` **The APK: never installed, never opened.** Build `a4c773f9` was
+  *submitted*; an artifact that has not been installed is not a working app.
+- `[ ]` **A successful sign-in and the two-device cart round trip on the phone.**
+  No Clerk account exists that this environment can authenticate as — creating
+  one needs an inbox — so the one flow the video is *about* has not been
+  exercised end to end. Per `AGENTS.md` §5 this stays
+  **`IMPLEMENTED / UNVERIFIED`**, and it is the first thing to run once the APK
+  is on the phone.
+- `[ ]` **An actual OTA update delivered to the installed build.** Free tier
+  cannot sign updates; D36 recorded that and nothing here changes it.
+
+**Next:** install the APK on a physical phone, create the demo account
+(email + password + username — see `docs/LESSON3_SUBMISSION.md` §5), then run the
+nine steps in one continuous take.
