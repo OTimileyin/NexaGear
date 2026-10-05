@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "NexaGear",
+    "slug": "nexagear-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "nexagear",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nexagear.shop"
+    },
+    "android": {
+      "package": "com.nexagear.shop",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "@clerk/expo",
+      "expo-secure-store",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9d86b236-318a-424f-b356-adabcb69e9df"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9d86b236-318a-424f-b356-adabcb69e9df"
+      }
+    },
+    "owner": "agenttim"
+  }
+}

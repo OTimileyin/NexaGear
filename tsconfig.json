@@ -36,6 +36,11 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    // The Expo app is its own TypeScript project with its own tsconfig and its
+    // own React Native types. Without this, `npm run typecheck` at the root
+    // would compile it against the DOM lib and fail on things that are correct
+    // on a phone — and, worse, would stop being a check of the website.
+    "mobile"
   ]
 }

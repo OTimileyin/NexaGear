@@ -6,6 +6,9 @@ export default defineConfig([
   ...nextCoreWebVitals,
   ...nextTypescript,
   globalIgnores([
+    // The Expo app is linted by its own toolchain; the website's config would
+    // flag React Native idioms it knows nothing about.
+    "mobile/**",
     "node_modules/**",
     ".next/**",
     "out/**",
