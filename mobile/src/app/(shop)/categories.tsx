@@ -1,0 +1,19 @@
+import { Image, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { type Href, useRouter } from "expo-router";
+import { useState } from "react";
+import { useCatalog } from "../../lib/catalog-context.tsx";
+import { productPhoto } from "../../lib/product-photos.ts";
+import { useTheme } from "../../lib/theme.ts";
+import { Screen, LoadingState, ErrorState, EmptyState } from "../../components/ui.tsx";
+import { SearchHeader, BenefitsStrip } from "../../components/shopping.tsx";
+export default function CategoriesScreen() {
+  const theme = useTheme(); const catalog = useCatalog(); const router = useRouter(); const [selected, setSelected] = useState<string | null>(null); const [query, setQuery] = useState("");
+  const width = Math.min(useWindowDimensions().width, 1000); const panelWidth = width * .73; const cellWidth = (panelWidth - 18 - 18) / 3; const photoSize = Math.min(66, cellWidth);
+  const categories = [...new Set(catalog.products.map(p => p.category))].sort(); const active = selected ?? categories[0]; const items = catalog.products.filter(p => p.category === active && `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase()));
+  return <Screen title="Categories" compact bottomSafe={false}><View style={{ flex: 1, width: "100%", maxWidth: 1000, alignSelf: "center" }}><SearchHeader value={query} onChange={setQuery} /><BenefitsStrip />
+    {catalog.status === "loading" ? <LoadingState what="Loading categories…" /> : catalog.status === "error" ? <ErrorState message={catalog.error ?? "Categories could not load."} onRetry={() => void catalog.reload()} /> : !categories.length ? <EmptyState title="No categories yet" body="Check back when the catalogue is available." /> : <View style={{ flex: 1, flexDirection: "row" }}>
+      <ScrollView style={{ width: "27%", flexGrow: 0, backgroundColor: theme.surface }} contentContainerStyle={{ paddingBottom: 12 }}>{categories.map(category => <Pressable key={category} accessibilityRole="button" accessibilityState={{ selected: category === active }} onPress={() => setSelected(category)} style={{ minHeight: 60, paddingHorizontal: 9, paddingVertical: 10, justifyContent: "center", borderLeftWidth: 4, borderColor: category === active ? theme.drafting : "transparent", backgroundColor: category === active ? theme.paper : "transparent" }}><Text style={{ color: theme.ink, fontSize: 14, lineHeight: 18, fontWeight: category === active ? "700" : "400" }}>{category}</Text></Pressable>)}</ScrollView>
+      <ScrollView style={{ flex: 1, minWidth: 0 }} contentContainerStyle={{ paddingHorizontal: 9, paddingBottom: 16 }}><Text accessibilityRole="header" style={{ color: theme.ink, fontSize: 16, fontWeight: "700", minHeight: 38, paddingTop: 10 }}>{active}</Text><Pressable accessibilityRole="button" onPress={() => router.push(`/?category=${encodeURIComponent(active)}` as Href)} style={{ minHeight: 36, justifyContent: "center" }}><Text style={{ color: theme.signal, fontSize: 12 }}>Shop all {items.length} products →</Text></Pressable><View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: 9 }}>{items.map(product => { const photo = productPhoto(product.slug, product.imageUrl); return <Pressable key={product.id} accessibilityRole="button" accessibilityLabel={`View ${product.name}`} onPress={() => router.push(`/product?id=${product.id}` as Href)} style={{ width: cellWidth, minHeight: 122, alignItems: "center", gap: 6 }}>{photo ? <Image source={photo} style={{ width: photoSize, height: photoSize, borderRadius: photoSize / 2, backgroundColor: theme.surface }} /> : null}<Text numberOfLines={3} style={{ color: theme.ink, fontSize: 12, lineHeight: 16, textAlign: "center" }}>{product.name}</Text></Pressable>; })}</View>{!items.length ? <Text style={{ color: theme.steel, paddingVertical: 16 }}>No matching products in this category.</Text> : null}</ScrollView>
+    </View>}</View>
+  </Screen>;
+}

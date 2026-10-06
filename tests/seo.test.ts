@@ -62,7 +62,7 @@ describe("productJsonLd", () => {
     expect(data.name).toBe("Compact Mechanical Keyboard");
     expect(data.sku).toBe("NG-101");
     expect(data.offers.price).toBe("89.00");
-    expect(data.offers.priceCurrency).toBe("USD");
+    expect(data.offers.priceCurrency).toBe("NGN");
     expect(data.offers.url).toBe(
       "https://nexagear.vercel.app/product/compact-mechanical-keyboard",
     );

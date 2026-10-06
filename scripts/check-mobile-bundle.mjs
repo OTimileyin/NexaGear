@@ -1,0 +1,13 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+const metro = process.env.METRO_URL ?? 'http://localhost:8081';
+const response = await fetch(metro, {headers:{'expo-platform':'android',accept:'application/expo+json'}});
+if(!response.ok) throw new Error('Metro manifest failed: '+response.status);
+const manifest = await response.json();
+if(!manifest.launchAsset?.url) throw new Error('No Android launch asset in the Expo manifest');
+const bundle = await fetch(manifest.launchAsset.url);
+const text = await bundle.text();
+const evidence = {status:bundle.status,bytes:text.length,usesSrcApp:manifest.launchAsset.url.includes('transform.routerRoot=src'),hasTabs:text.includes('(shop)'),hasProductGrid:text.includes('ProductTile'),hasProductSearch:text.includes('Search NexaGear')};
+await mkdir('test-results/mobile-flow',{recursive:true});
+await writeFile('test-results/mobile-flow/android-bundle.json',JSON.stringify(evidence,null,2));
+console.log(JSON.stringify(evidence));
+if(evidence.status !== 200 || !evidence.usesSrcApp || !evidence.hasTabs || !evidence.hasProductGrid || !evidence.hasProductSearch) throw new Error('Updated Android bundle verification failed');

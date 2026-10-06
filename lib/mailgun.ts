@@ -1,4 +1,5 @@
 import "server-only";
+import { formatMoney } from "@/lib/format";
 
 export interface ConfirmationOrder {
   id: string;
@@ -16,7 +17,7 @@ export interface MailgunResult {
 }
 
 function money(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return formatMoney(amount);
 }
 
 /** Pure builder — unit-tested: reference, date, items, quantities, total (PRD §15). */

@@ -1,5 +1,7 @@
 # NexaGear — Architecture
 
+**D41 mobile checkout amendment (2026-10-05):** The phone uses a native delivery form and a secure Paystack browser session, then checks payment through authenticated Next.js API routes. Those routes reuse the website's `placeOrder`/`startPayment` actions and shared `lib/payment-verification.ts`. Supabase RPC computes the order total; RLS scopes reads and writes to the Clerk caller. Local LAN builds infer the backend host from Metro on port 3000; cloud builds need `EXPO_PUBLIC_API_URL` pointing at the updated deployment. An old Vercel deployment cannot supply these newly implemented endpoints.
+
 **Status:** Planned (pre-build) · Derived from `docs/PRD.md` §10–§19, §22–§24.
 
 ## 1. System components

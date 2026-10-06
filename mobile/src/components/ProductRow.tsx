@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { formatMoney, inventoryLabel } from "../lib/format.ts";
 import { useTheme } from "../lib/theme.ts";
+import { productPhoto } from "../lib/product-photos.ts";
 import type { Product } from "../lib/types.ts";
 import { Button, StatusDot } from "./ui.tsx";
 
@@ -28,9 +29,11 @@ export function ProductRow({
   const theme = useTheme();
   const stock = inventoryLabel(product.inventoryStatus);
   const soldOut = product.inventoryStatus === "out_of_stock";
+  const photo = productPhoto(product.slug, product.imageUrl);
 
   return (
     <View style={[styles.row, { borderBottomColor: theme.border }]}>
+      {photo ? <Image source={photo} accessibilityLabel={`${product.name}, representative photograph`} style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 16, backgroundColor: theme.surface }} resizeMode="cover" /> : null}
       <View style={styles.info}>
         <Text style={[styles.name, { color: theme.ink }]}>{product.name}</Text>
         <Text style={[styles.meta, { color: theme.steel }]}>
@@ -52,13 +55,14 @@ export function ProductRow({
       <View style={styles.action}>
         <Button
           busy={busy}
+          accessibilityLabel={soldOut ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
           disabled={soldOut}
           label={
             soldOut
               ? `${product.name} is out of stock`
               : inCartQuantity > 0
-                ? `Add another ${product.name} to your cart`
-                : `Add ${product.name} to your cart`
+                ? "Add another"
+                : "Add to cart"
           }
           onPress={onAdd}
         />
@@ -69,7 +73,7 @@ export function ProductRow({
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "flex-start",
     gap: 12,
     paddingVertical: 16,

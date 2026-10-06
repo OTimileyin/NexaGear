@@ -8,6 +8,7 @@ import "@fontsource/ibm-plex-mono/600.css";
 import "./globals.css";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { BrandMark } from "@/components/BrandMark";
 import { ThemeScript } from "@/components/ThemeScript";
 import { CartSheet } from "@/components/CartSheet";
 import { CartSync } from "@/components/CartSync";
@@ -94,20 +95,17 @@ export default function RootLayout({
             <CartSheetProvider>
               <SiteHeader />
               <main id="main-content" className="flex-1">{children}</main>
-              <footer className="mt-16 border-t border-ink/15 apple:mt-24 apple:border-t-0 apple:bg-surface">
-                <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-6 text-xs text-steel apple:max-w-6xl apple:py-8 sm:flex-row sm:items-center sm:justify-between">
-                  <p>
-                    NexaGear — HNG internship assignment demo. Payments run in
-                    Paystack test mode; no real money moves.
-                  </p>
-                  <p className="flex items-center gap-4 font-mono apple:font-sans apple:text-sm">
+              <footer className="mt-12 border-t border-ink/10">
+                <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-start md:justify-between">
+                  <div><Link href="/" className="inline-flex items-center gap-3 text-xl font-semibold tracking-tight"><BrandMark className="size-8 text-signal" />NexaGear</Link><p className="mt-4 text-sm text-steel">Make room for your next idea.</p><p className="mt-3 max-w-sm text-xs leading-relaxed text-steel">Demo store. Representative product photography. Payments use Paystack test mode; no real money moves.</p></div>
+                  <p className="flex flex-wrap items-center gap-6 text-sm text-steel">
+                    <Link href="/shop" className="inline-flex min-h-11 items-center hover:text-signal">Shop gear</Link>
                     <Link href="/privacy" className="hover:text-drafting">
                       Privacy
                     </Link>
                     <Link href="/terms" className="hover:text-drafting">
                       Terms
                     </Link>
-                    <span>Free delivery · NG-2026</span>
                   </p>
                 </div>
               </footer>

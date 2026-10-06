@@ -6,6 +6,10 @@
   "build": {
     "preview": {
       "distribution": "internal",
+      "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://nexagear.vercel.app"
+      },
       "android": {
         "buildType": "apk"
       }

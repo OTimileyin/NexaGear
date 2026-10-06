@@ -167,7 +167,7 @@ export function productJsonLd(product: SeoProduct, baseUrl: string): string {
       "@type": "Offer",
       url: `${baseUrl.replace(/\/+$/, "")}/product/${product.slug}`,
       price: product.price.toFixed(2),
-      priceCurrency: "USD",
+      priceCurrency: "NGN",
       availability: `https://schema.org/${schemaAvailability(product.inventoryStatus)}`,
     },
   };

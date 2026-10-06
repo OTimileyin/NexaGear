@@ -1,5 +1,7 @@
 # NexaGear — Design Guidelines
 
+> **Current direction (D39, 2026-10-05):** the owner requested a cleaner store, real photography, NexaGear branding, and a motion-led homepage. `BRAND_IDENTITY.md` defines the current implementation. This supersedes the older exposed theme comparisons, mask-only product artwork, and prohibition on landing-page motion described below. Light/dark accessibility and truthful catalogue content remain required. The older sections are retained as design history.
+
 > **Two approved directions (D29) × two colour schemes (D30) — four appearances.**
 > `datasheet/light` is the shipped default and is unchanged. A second direction,
 > `apple`, is a **comparison**, reachable with `?theme=apple` or the header

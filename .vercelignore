@@ -1,0 +1,12 @@
+/mobile/
+/test-results/
+/playwright-report/
+/coverage/
+/.forge/
+/.freebuff/
+.env*
+!.env.example
+/docs/
+/tests/
+/HANDOFF.md
+/NEXAGEAR-CREDENTIALS.md.gpg

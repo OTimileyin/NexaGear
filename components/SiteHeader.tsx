@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { AuthSection } from "@/components/AuthSection";
 import { CartTrigger } from "@/components/CartTrigger";
+import { BrandMark } from "@/components/BrandMark";
 import { SchemeToggle } from "@/components/SchemeToggle";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -31,28 +31,24 @@ export async function SiteHeader() {
     // The datasheet theme's header is defined by a hairline rule underneath.
     // The apple theme drops the rule and gains vertical breathing room, since
     // space is what separates surfaces in that language.
-    <header className="border-b border-ink/15 apple:border-b-0 apple:bg-surface/70">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-4 apple:max-w-6xl apple:py-6">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold tracking-tight apple:text-xl">
+    <header className="sticky top-0 z-30 border-b border-ink/10 bg-paper/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="NexaGear home">
+          <BrandMark className="size-9 text-signal" />
+          <span className="text-xl font-semibold tracking-tight">
             NexaGear
           </span>
-          <span className="hidden font-mono text-[11px] text-steel sm:inline">
-            NG-2026
-          </span>
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-4 sm:gap-6 text-sm">
-          <Link href="/shop" className="hover:text-drafting">
-            Shop
+        <nav aria-label="Main" className="flex flex-wrap items-center gap-3 text-sm sm:gap-5">
+          <Link href="/shop" className="inline-flex min-h-11 items-center font-medium hover:text-signal">
+            Shop gear
           </Link>
+          <Link href="/#our-approach" className="hidden min-h-11 items-center font-medium hover:text-signal md:inline-flex">Our approach</Link>
           <CartTrigger />
-          {admin && (
-            <Link href="/admin" className="font-mono text-xs hover:text-drafting apple:font-sans">
-              Admin
-            </Link>
-          )}
-          <ThemeToggle />
           <SchemeToggle />
+          {admin && (
+            <details className="relative"><summary className="flex min-h-11 cursor-pointer items-center text-steel">Manage</summary><Link href="/admin" className="absolute right-0 top-full whitespace-nowrap rounded-lg border border-ink/15 bg-paper px-5 py-4 shadow-sm">Admin dashboard</Link></details>
+          )}
           <AuthSection />
         </nav>
       </div>

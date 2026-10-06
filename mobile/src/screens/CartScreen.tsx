@@ -1,32 +1,22 @@
 import { useAuth, useClerk } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { useCart } from "../cart/cart-context.tsx";
 import {
   Button,
-  EmptyState,
   ErrorState,
   LoadingState,
   QuantityStepper,
   Screen,
 } from "../components/ui.tsx";
 import { formatMoney } from "../lib/format.ts";
-import { SHOP_URL } from "../lib/site.ts";
 import { useTheme } from "../lib/theme.ts";
+import { Recommendations } from "../components/Recommendations.tsx";
+import { Band, ShopIcon, TopBar } from "../components/shopping.tsx";
 
-/**
- * The cart.
- *
- * This screen shows the *account's* cart, not a copy of it: the same rows the
- * website reads, streamed live. That is why it is empty while signed out —
- * there is nothing to show — and why the copy says so instead of implying the
- * cart was lost.
- *
- * Checkout stays on the website. `create_order` and the payment path live
- * there (PRD §13), and a phone that claimed to take payment without them would
- * be a lie; the button that opens the site is the honest version of that step.
- */
+
+/** Shared account cart. Checkout collects delivery details in the app. */
 export default function CartScreen() {
   const theme = useTheme();
   const router = useRouter();
@@ -34,18 +24,13 @@ export default function CartScreen() {
   const { signOut } = useClerk();
   const cart = useCart();
 
-  if (!isSignedIn) {
-    return (
-      <Screen title="Your cart" subtitle="The cart belongs to your account">
-        <EmptyState
-          title="Sign in to see your cart"
-          body="Your cart is shared with the website, so it needs an account. Sign in and anything you have added on nexagear.vercel.app appears here."
-          action={
-            <Button label="Sign in" onPress={() => router.push("/sign-in" as Href)} />
-          }
-        />
-      </Screen>
-    );
+
+  if (!isSignedIn || (cart.status === "ready" && cart.items.length === 0)) {
+    return <Screen title="Cart" compact><TopBar title="Cart" /><ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+      <View style={{ minHeight: 87, padding: 13, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 15 }}><ShopIcon name="cart" color={theme.border} size={58} /><View style={{ flex: 1, maxWidth: 270 }}><Text style={{ color: theme.ink, fontSize: 18, fontWeight: "700" }}>{isSignedIn ? "Your shopping cart is empty" : "Sign in to see your cart"}</Text><Text style={{ color: theme.steel, fontSize: 14, marginTop: 5 }}>{isSignedIn ? "Add your favourite gear to it." : "Your account keeps your cart in sync."}</Text></View></View>
+      {!isSignedIn ? <View style={{ paddingHorizontal: 13, paddingBottom: 13 }}><Button label="Sign in" onPress={() => router.push("/sign-in" as Href)} /></View> : null}
+      <Band /><Recommendations />
+    </ScrollView></Screen>;
   }
 
   if (cart.status === "loading") {
@@ -68,31 +53,19 @@ export default function CartScreen() {
     );
   }
 
-  if (cart.items.length === 0) {
-    return (
-      <Screen title="Your cart" subtitle="Shared with the website">
-        <EmptyState
-          title="Nothing in your cart yet"
-          body="Add something from the shop on this phone, or from the website — the same cart shows up in both."
-          action={
-            <Button label="Browse the shop" onPress={() => router.replace("/" as Href)} />
-          }
-        />
-      </Screen>
-    );
-  }
 
   return (
     <Screen
       title="Your cart"
       subtitle={`${cart.count} ${cart.count === 1 ? "item" : "items"} · shared with the website`}
-      action={
+      action={<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        <Button tone="quiet" label="Shop" onPress={() => router.replace("/" as Href)} />
         <Button
           tone="quiet"
           label="Reload cart"
           busy={cart.refreshing}
           onPress={cart.refresh}
-        />
+        /></View>
       }
     >
       <ScrollView contentContainerStyle={styles.list}>
@@ -137,15 +110,12 @@ export default function CartScreen() {
           </Text>
         </View>
         <Text style={[styles.summaryNote, { color: theme.steel }]}>
-          The website prices every order from the database again at checkout, so this
-          total is for reference.
+          Your order total is confirmed from the store’s prices at checkout.
         </Text>
 
         <Button
-          label="Checkout on the website"
-          onPress={() => {
-            void Linking.openURL(`${SHOP_URL}/cart`);
-          }}
+          label="Checkout"
+          onPress={() => router.push("/checkout" as Href)}
         />
         <Button tone="quiet" label="Sign out" onPress={() => void signOut()} />
       </ScrollView>
@@ -154,7 +124,7 @@ export default function CartScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 20, gap: 16 },
+  list: { padding: 13, gap: 12 },
   line: {
     flexDirection: "row",
     alignItems: "flex-start",

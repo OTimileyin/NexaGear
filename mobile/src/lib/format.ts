@@ -1,14 +1,7 @@
-/**
- * Two functions copied from the web's `lib/format.ts` on purpose.
- *
- * The phone and the browser have to print the same price for the same row, and
- * the video shows both at once — so a phone that formatted `$89` where the web
- * said `$89.00` would look like the two carts disagree. Kept deliberately tiny
- * and identical; if the web's format ever changes, this must change with it.
- */
+/** Both clients display catalogue and checkout amounts in NGN. */
 export function formatMoney(amount: number): string {
-  if (!Number.isFinite(amount)) return "$0.00";
-  return `$${amount.toFixed(2)}`;
+  if (!Number.isFinite(amount)) return "\u20a60.00";
+  return `\u20a6${amount.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 /** Status label always pairs text with colour (never colour alone, WCAG AA). */

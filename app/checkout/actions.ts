@@ -20,6 +20,7 @@ import { ensureProfile } from "@/lib/profile";
 import { enforceForRequest } from "@/lib/rate-limit";
 import { rateLimitMessage } from "@/lib/rate-limit-core";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { isMobileReturnUrl } from "@/lib/mobile-checkout";
 
 export type PlaceOrderResult =
   | { ok: true; orderId: string; emailSent: boolean }
@@ -75,7 +76,7 @@ async function currentOrigin(): Promise<string> {
  * the products table — never from the browser. The row is read through the
  * RLS-scoped client, so another user's order simply is not visible here.
  */
-export async function startPayment(orderId: string): Promise<StartPaymentResult> {
+export async function startPayment(orderId: string, mobileReturnUrl?: string): Promise<StartPaymentResult> {
   const user = await getCurrentUser();
   if (!user) {
     return {
@@ -160,11 +161,12 @@ export async function startPayment(orderId: string): Promise<StartPaymentResult>
   }
 
   const origin = await currentOrigin();
+  if (mobileReturnUrl !== undefined && !isMobileReturnUrl(mobileReturnUrl)) return { ok: false, code: "server_error", message: "The payment return address is invalid. Reopen checkout in the app." };
   const result = await initializeTransaction({
     reference: row.id,
     email: row.customer_email,
     amount,
-    callbackUrl: `${origin}/checkout/verify`,
+    callbackUrl: mobileReturnUrl ? `${origin}/api/mobile/payment/return?returnUrl=${encodeURIComponent(mobileReturnUrl)}` : `${origin}/checkout/verify`,
   });
 
   if (result.ok) {

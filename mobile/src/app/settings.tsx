@@ -1,0 +1,20 @@
+import { useRef } from "react";
+import { useClerk, useAuth, useUser } from "@clerk/expo";
+import { useRouter } from "expo-router";
+import { ScrollView, Text, View, Share, Pressable } from "react-native";
+import { Button, Screen } from "../components/ui.tsx";
+import * as Linking from "expo-linking";
+import { Band, SettingsRow, ShopIcon, TopBar } from "../components/shopping.tsx";
+import { useAppearance, useTheme, type ThemePreference } from "../lib/theme.ts";
+
+export default function SettingsScreen() {
+  const appearanceScroll = useRef<ScrollView>(null);
+  const theme = useTheme(); const { preference, setPreference, error } = useAppearance(); const { signOut } = useClerk(); const { isSignedIn } = useAuth(); const { user } = useUser(); const router = useRouter();
+  return <Screen title="Settings" compact><TopBar title="Settings" /><ScrollView ref={appearanceScroll} contentContainerStyle={{ paddingBottom: 20, width: "100%", maxWidth: 800, alignSelf: "center" }}>
+    <View style={{ padding: 13, gap: 8 }}><Text accessibilityRole="header" style={{ color: theme.stock, fontSize: 19, fontWeight: "700" }}>Your NexaGear account</Text><Text style={{ color: theme.steel, fontSize: 14, lineHeight: 18 }}>Manage your appearance and read how your account and payment information are used.</Text><View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: 16, rowGap: 8, marginTop: 4 }}>{[{ label: "Account", icon: "account" as const, path: isSignedIn ? "/account" as const : "/sign-in" as const }, { label: "Privacy", icon: "shield" as const, path: "/privacy" as const }, { label: "Appearance", icon: "sun" as const, path: null }, { label: "Shopping terms", icon: "orders" as const, path: "/privacy" as const }].map(item => <Pressable key={item.label} accessibilityRole="button" onPress={() => item.path ? router.push(item.path) : appearanceScroll.current?.scrollTo({ y: 390, animated: false })} style={{ width: "47%", height: 48, borderWidth: 1, borderColor: theme.border, borderRadius: 4, paddingHorizontal: 9, flexDirection: "row", alignItems: "center", gap: 5 }}><ShopIcon name={item.icon} color={theme.stock} size={20} /><Text numberOfLines={1} style={{ color: theme.stock, fontSize: 13, fontWeight: "700", flex: 1 }}>{item.label}</Text><ShopIcon name="chevron" color={theme.stock} size={13} /></Pressable>)}</View><View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><ShopIcon name="shield" color={theme.stock} size={18} /><Text style={{ color: theme.steel, fontSize: 12 }}>Payments open on Paystack’s payment screen.</Text></View></View>
+    <Band /><SettingsRow label="Country & region" value="NG" /><SettingsRow label="Language" value="English" /><SettingsRow label="Currency" value="NGN" />
+    <Band /><SettingsRow label="Appearance" value={preference === "auto" ? "Device setting" : preference === "light" ? "Light" : "Dark"} /><View accessibilityRole="radiogroup" style={{ padding: 13, gap: 8 }}>{(["auto", "light", "dark"] as ThemePreference[]).map(value => <Button key={value} selected={value === preference} tone={value === preference ? "primary" : "quiet"} label={`${value === "auto" ? "Device setting" : value === "light" ? "Light" : "Dark"}${value === preference ? " · selected" : ""}`} onPress={() => void setPreference(value)} />)}</View>{error ? <Text accessibilityRole="alert" style={{ color: theme.signal, paddingHorizontal: 13 }}>{error}</Text> : null}
+    <Band /><SettingsRow label="About this app" value="NexaGear" onPress={() => router.push("/privacy")} /><SettingsRow label="Legal terms & policies" onPress={() => router.push("/privacy")} /><SettingsRow label="Share this app" onPress={() => { void Share.share({ message: "Discover creator tools, developer gear and home essentials with NexaGear. " + Linking.createURL("/") }); }} />
+    {isSignedIn ? <><Band /><SettingsRow label="Signed in as" value={user?.primaryEmailAddress?.emailAddress} /><Band /><SettingsRow label="Sign out" onPress={() => void signOut()} /></> : null}
+  </ScrollView></Screen>;
+}

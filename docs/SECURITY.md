@@ -4,6 +4,8 @@
 
 ## 1. Authentication
 
+**D41 native checkout amendment:** `/api/mobile/checkout`, `/api/mobile/payment` and `/api/mobile/payment/verify` accept the authenticated Clerk session token in the Authorization header through the existing Clerk middleware. They reuse server order validation, idempotency, rate limits, database pricing and owner-scoped RLS. Device amounts, user IDs and callback payment claims are never trusted. Paystack credentials remain on the server. The unauthenticated payment-return bridge redirects only to the NexaGear checkout deep link (Expo Go checkout paths are development-only) and does not verify or disclose an order. Native payment results require an authenticated provider verification. No service-role bypass is introduced.
+
 - **Provider:** **Clerk** with Google OAuth (DECISION_LOG D18). Google credentials originate in Google Cloud Console; Supabase Auth (GoTrue) is no longer used.
 - Sessions are managed by Clerk and refreshed by `clerkMiddleware()` in `proxy.ts` (the Next.js 16 middleware convention). No session data is stored in `localStorage`.
 - There is **no app OAuth callback route** — Clerk completes the OAuth handshake and issues the session.

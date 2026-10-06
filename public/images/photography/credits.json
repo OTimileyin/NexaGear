@@ -1,0 +1,98 @@
+[
+  {
+    "file": "public/images/photography/adjustable-laptop-stand.webp",
+    "photographer": "Denis S.",
+    "source": "https://unsplash.com/photos/a-laptop-computer-sitting-on-top-of-a-desk-8Y4j0iovSuM",
+    "license": "https://unsplash.com/license",
+    "description": "a laptop computer sitting on top of a desk",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/arduino-starter-kit.webp",
+    "photographer": "Vishnu Mohanan",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-small-electronic-device-on-a-table-kyDsOF8gsIA",
+    "license": "https://unsplash.com/license",
+    "description": "a close up of a small electronic device on a table",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/compact-mechanical-keyboard.webp",
+    "photographer": "bady abbas",
+    "source": "https://unsplash.com/photos/a-keyboard-sitting-on-top-of-a-wooden-table-pgK2Khi85dU",
+    "license": "https://unsplash.com/license",
+    "description": "a keyboard sitting on top of a wooden table",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/developer-precision-mouse.webp",
+    "photographer": "Oscar Ivan Esquivel Arteaga",
+    "source": "https://unsplash.com/photos/closeup-photo-of-gray-and-black-cordless-mouse-ZtxED1cpB1E",
+    "license": "https://unsplash.com/license",
+    "description": "closeup photo of gray and black cordless mouse",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/gan-fast-charger.webp",
+    "photographer": "Gavin Phillips",
+    "source": "https://unsplash.com/photos/black-baseus-70w-gan-travel-adapter-OaNfWxDJ4AI",
+    "license": "https://unsplash.com/license",
+    "description": "Black baseus 70w gan travel adapter",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/portable-power-bank.webp",
+    "photographer": "I'M ZION",
+    "source": "https://unsplash.com/photos/two-rectangular-white-and-black-power-banks-SDzrZdS2_IE",
+    "license": "https://unsplash.com/license",
+    "description": "two rectangular white and black power banks",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/robot-chassis-motor-bundle.webp",
+    "photographer": "Gabriel Vasiliu",
+    "source": "https://unsplash.com/photos/a-small-robot-car-with-wheels-and-wires-attached-to-it-mVJzfw2Zm7Y",
+    "license": "https://unsplash.com/license",
+    "description": "a small robot car with wheels and wires attached to it",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/sensor-exploration-pack.webp",
+    "photographer": "Denis Nuțiu",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-piece-of-electronic-equipment-zjCc0l9l1cI",
+    "license": "https://unsplash.com/license",
+    "description": "a close up of a piece of electronic equipment",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/soldering-prototyping-kit.webp",
+    "photographer": "Clint Patterson",
+    "source": "https://unsplash.com/photos/white-and-blue-electronic-console-with-black-multitester-lPcXuJyoIjU",
+    "license": "https://unsplash.com/license",
+    "description": "white and blue electronic console with black multitester",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/studio-monitoring-headphones.webp",
+    "photographer": "Kiran CK",
+    "source": "https://unsplash.com/photos/black-and-silver-headphones-on-white-surface-LSNJ-pltdu8",
+    "license": "https://unsplash.com/license",
+    "description": "black and silver headphones on white surface",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/usb-c-8-in-1-hub.webp",
+    "photographer": "Lasse Jensen",
+    "source": "https://unsplash.com/photos/black-and-gray-portable-speaker-on-white-book-4nVJUZEJb3s",
+    "license": "https://unsplash.com/license",
+    "description": "black and gray portable speaker on white book",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  },
+  {
+    "file": "public/images/photography/workspace.webp",
+    "photographer": "Huy Phan",
+    "source": "https://unsplash.com/photos/a-modern-and-organized-computer-workspace-is-displayed-7mhNvPV5LrE",
+    "license": "https://unsplash.com/license",
+    "description": "A modern and organized computer workspace is displayed",
+    "usage": "Representative photography for the demo catalogue; not an exact SKU or endorsement."
+  }
+]

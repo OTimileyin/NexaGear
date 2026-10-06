@@ -25,15 +25,20 @@ export function Screen({
   subtitle,
   action,
   children,
+  compact = false,
+  bottomSafe = true,
 }: {
   title: string;
   subtitle?: string;
   action?: ReactNode;
   children: ReactNode;
+  compact?: boolean;
+  bottomSafe?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: theme.paper }]} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: theme.paper }]} edges={bottomSafe ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]}>
+      {!compact ? <>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <View style={styles.headerText}>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.ink }]}>
@@ -45,6 +50,7 @@ export function Screen({
         </View>
         {action}
       </View>
+      </> : null}
       <View style={styles.body}>{children}</View>
     </SafeAreaView>
   );
@@ -56,23 +62,27 @@ export function Button({
   tone = "primary",
   busy = false,
   disabled = false,
+  selected,
+  accessibilityLabel,
 }: {
   label: string;
   onPress: () => void;
   tone?: "primary" | "quiet";
   busy?: boolean;
   disabled?: boolean;
+  selected?: boolean;
+  accessibilityLabel?: string;
 }) {
   const theme = useTheme();
   const blocked = disabled || busy;
   const background = tone === "primary" ? theme.drafting : "transparent";
-  const textColor = tone === "primary" ? "#ffffff" : theme.drafting;
+  const textColor = tone === "primary" ? "#111111" : theme.scheme === "light" ? theme.signal : theme.drafting;
 
   return (
     <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled: blocked, busy }}
+      accessibilityRole={selected === undefined ? "button" : "radio"}
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ disabled: blocked, busy, checked: selected }}
       disabled={blocked}
       onPress={onPress}
       style={({ pressed }) => [
@@ -205,13 +215,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 13,
     paddingTop: 8,
     paddingBottom: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerText: { flexShrink: 1 },
-  title: { fontSize: 26, fontWeight: "700", letterSpacing: -0.4 },
+  title: { fontSize: 19, fontWeight: "700" },
   subtitle: { fontSize: 14, marginTop: 2 },
   body: { flex: 1 },
   button: {
@@ -219,7 +229,7 @@ const styles = StyleSheet.create({
     minWidth: 44,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 5,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",

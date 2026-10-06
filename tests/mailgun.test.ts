@@ -29,12 +29,12 @@ describe("buildConfirmationEmail (PRD §15 contents)", () => {
 
   it("includes products, quantities, and line totals", () => {
     expect(text).toContain("Compact Mechanical Keyboard x 2");
-    expect(text).toContain("$178.00");
+    expect(text).toContain("₦178.00");
   });
 
   it("includes subtotal and total", () => {
-    expect(text).toContain("Subtotal: $178.00");
-    expect(text).toContain("Total: $178.00");
+    expect(text).toContain("Subtotal: ₦178.00");
+    expect(text).toContain("Total: ₦178.00");
   });
 
   it("includes a confirmation message and honest demo framing", () => {

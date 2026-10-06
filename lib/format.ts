@@ -2,8 +2,8 @@ import type { InventoryStatus } from "@/lib/types";
 
 /** Money display — single source for how prices render (unit-tested). */
 export function formatMoney(amount: number): string {
-  if (!Number.isFinite(amount)) return "$0.00";
-  return `$${amount.toFixed(2)}`;
+  if (!Number.isFinite(amount)) return "\u20a60.00";
+  return `\u20a6${amount.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 /** Status label always pairs text with color (never color alone). */

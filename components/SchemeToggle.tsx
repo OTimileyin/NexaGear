@@ -75,7 +75,7 @@ export function SchemeToggle() {
         return (
           <label
             key={option}
-            className={`cursor-pointer rounded-full border px-2 py-1 text-[11px] leading-none transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-drafting ${
+            className={`inline-flex min-h-11 cursor-pointer items-center rounded-full border px-3 text-xs leading-none transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-drafting ${
               selected
                 ? "border-transparent bg-ink text-paper apple:bg-signal apple:text-paper"
                 : "border-ink/30 text-steel hover:text-ink apple:border-ink/20 apple:bg-surface"

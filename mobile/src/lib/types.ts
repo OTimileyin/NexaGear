@@ -4,6 +4,7 @@ export type InventoryStatus = "in_stock" | "low_stock" | "out_of_stock";
 export interface Product {
   id: string;
   name: string;
+  description: string;
   sku: string;
   slug: string;
   category: string;

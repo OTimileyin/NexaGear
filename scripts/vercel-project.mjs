@@ -1,0 +1,10 @@
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+const file = await readFile(".env.local", "utf8");
+const token = process.env.VERCEL_TOKEN || file.match(/^VERCEL_TOKEN=(.*)$/m)?.[1]?.trim().replace(/^"|"$/g, "");
+if (!token) throw new Error("VERCEL_TOKEN is missing from the local environment.");
+const response = await fetch("https://api.vercel.com/v9/projects/nexagear", { headers: { Authorization: `Bearer ${token}` } });
+if (!response.ok) throw new Error(`Vercel project lookup HTTP ${response.status}`);
+const project = await response.json();
+console.log(JSON.stringify({ name: project.name, framework: project.framework, environmentNames: project.env?.map(item => ({ key: item.key, target: item.target })) }, null, 2));
+await mkdir(".vercel", { recursive: true });
+await writeFile(".vercel/project.json", JSON.stringify({ projectId: project.id, orgId: project.accountId, projectName: project.name }, null, 2));

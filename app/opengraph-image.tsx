@@ -33,8 +33,8 @@ export default function OpengraphImage() {
             color: "#5C646D",
           }}
         >
-          <span>NEXAGEAR · CATALOGUE 2026</span>
-          <span>NG-2026</span>
+          <span>NEXAGEAR</span>
+          <span>FOR DEVELOPERS. FOR MAKERS.</span>
         </div>
 
         <div
@@ -52,7 +52,7 @@ export default function OpengraphImage() {
               lineHeight: 1.05,
             }}
           >
-            Gear that earns its desk space.
+            Make room for your next idea.
           </div>
           <div style={{ fontSize: 32, color: "#5C646D", display: "flex" }}>
             Keyboards, hubs, power, audio, and electronics kits for developers

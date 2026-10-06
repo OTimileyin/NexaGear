@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img">
-  <rect width="32" height="32" fill="#1A1D21"/>
-  <path d="M4 4h8M4 4v8" stroke="#C4430F" stroke-width="2.5" fill="none"/>
-  <text x="16" y="23" text-anchor="middle" font-family="monospace" font-size="15" font-weight="600" fill="#F6F3EC">NG</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="NexaGear">
+  <rect width="40" height="40" rx="10" fill="#C4430F"/>
+  <path d="M11 28V12H15L25 28H29V12" stroke="#F6F3EC" stroke-width="3" stroke-linejoin="round" fill="none"/>
+  <path d="M25 8H32" stroke="#F6F3EC" stroke-width="2"/>
 </svg>

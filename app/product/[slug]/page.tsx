@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: Props) {
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         {/* Annotated product image */}
         <div>
-          <div className="relative aspect-[4/3] overflow-hidden border border-ink/15 bg-surface apple:aspect-square apple:rounded-3xl apple:border-0 apple:bg-surface apple:p-12">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">
             {product.imageUrl ? (
               <ProductImage
                 src={product.imageUrl}
@@ -97,15 +97,7 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
 
-          {/* drafting dimension rule that draws in */}
-          <div className="relative mt-3 h-4 apple:hidden" aria-hidden="true">
-            <div className="animate-draw-rule absolute inset-x-0 top-1/2 h-px bg-drafting" />
-            <div className="absolute left-0 top-0 h-full w-px bg-drafting" />
-            <div className="absolute right-0 top-0 h-full w-px bg-drafting" />
-          </div>
-          <p className="mt-1 font-mono text-[11px] text-steel apple:hidden">
-            {product.sku} · {product.category.toUpperCase()} · REV 2026-10
-          </p>
+          <p className="mt-3 text-xs leading-relaxed text-steel">Demo catalogue. Photograph shows representative gear, not the exact stock item.</p>
         </div>
 
         {/* Spec sheet */}

@@ -1,0 +1,354 @@
+[
+  {
+    "key": "air-conditioner",
+    "description": "a white air conditioner sitting on top of a brick wall",
+    "photographer": "Everett Pachmann",
+    "source": "https://unsplash.com/photos/a-white-air-conditioner-sitting-on-top-of-a-brick-wall-JsPkVrHMQoo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "air-fryer",
+    "description": "a close up of a black blender on a table",
+    "photographer": "Kelsey Todd",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-black-blender-on-a-table-tdUOpMLDPGo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "air-purifier",
+    "description": "a white air conditioner sitting under a table",
+    "photographer": "Fujiphilm",
+    "source": "https://unsplash.com/photos/a-white-air-conditioner-sitting-under-a-table-oodKiqDIyCE",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "audio-interface",
+    "description": "A music recording studio with guitars on the wall and a large mixing console",
+    "photographer": "Caught In Joy",
+    "source": "https://unsplash.com/photos/recording-studio-with-guitars-and-console-ptVBlniJi50",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "blender",
+    "description": "a blender filled with ingredients to make a smoothie",
+    "photographer": "Nature Zen",
+    "source": "https://unsplash.com/photos/a-blender-filled-with-ingredients-to-make-a-smoothie-oJzx58W1__M",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "bulb",
+    "description": "light bulb illustration",
+    "photographer": "Alessandro Bianchi",
+    "source": "https://unsplash.com/photos/light-bulb-illustration-_kdTyfnUFAc",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "cables",
+    "description": "orange USB cables",
+    "photographer": "Lucian Alexe",
+    "source": "https://unsplash.com/photos/orange-usb-cables-yh0UtueiZ-I",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "camera",
+    "description": "flat lay photography of black Sony DSLR camera on black surface",
+    "photographer": "Conor Luddy",
+    "source": "https://unsplash.com/photos/flat-lay-photography-of-black-sony-dslr-camera-on-black-surface-IVaKksEZmZA",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "charger",
+    "description": "black smartphone with charger cord connected",
+    "photographer": "Andreas Haslinger",
+    "source": "https://unsplash.com/photos/black-smartphone-with-charger-cord-connected-W9Z87k4hV08",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "coffee-machine",
+    "description": "black and silver coffee maker",
+    "photographer": "Kevin Schmid",
+    "source": "https://unsplash.com/photos/black-and-silver-coffee-maker-ftA71vetxuo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "computer",
+    "description": "A computer monitor, keyboard, and game controllers on a white desk in a workspace",
+    "photographer": "Sebastian Bednarek",
+    "source": "https://unsplash.com/photos/computer-workspace-with-keyboard-and-controllers-x2Z0uNj-Quo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "cooker",
+    "description": "gra yand black rice cooker",
+    "photographer": "Katherine Chase",
+    "source": "https://unsplash.com/photos/gra-yand-black-rice-cooker-VNBUJ6imfGs",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "extension",
+    "description": "person holding white electric plug",
+    "photographer": "Kelly Sikkema",
+    "source": "https://unsplash.com/photos/person-holding-white-electric-plug-fZirmwarM0E",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "fan",
+    "description": "A metal desk fan with a wire cage in a warm sunlit room",
+    "photographer": "Delaney Van",
+    "source": "https://unsplash.com/photos/metal-desk-fan-in-sunlit-room-MvCW2PE9Tbg",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "headphones",
+    "description": "flatlay photography of wireless headphones",
+    "photographer": "C D-X",
+    "source": "https://unsplash.com/photos/flatlay-photography-of-wireless-headphones-PDX_a_82obo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "hub",
+    "description": "Black usb hub with seven ports and switches",
+    "photographer": "Barry A",
+    "source": "https://unsplash.com/photos/black-usb-hub-with-seven-ports-and-switches-XxvKhAUs2PA",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "iron",
+    "description": "white and teal steam clothes iron plugged on ironing board",
+    "photographer": "Filip Mroz",
+    "source": "https://unsplash.com/photos/white-and-teal-steam-clothes-iron-plugged-on-ironing-board-gma1zfS3_6E",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "kettle",
+    "description": "a black and white photo of a water kettle",
+    "photographer": "engin akyurt",
+    "source": "https://unsplash.com/photos/a-black-and-white-photo-of-a-water-kettle-pVD5AIpHNhU",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "keyboard",
+    "description": "black and orange computer keyboard",
+    "photographer": "Stefen Tan",
+    "source": "https://unsplash.com/photos/black-and-orange-computer-keyboard-KYw1eUx1J7Y",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "laptop",
+    "description": "MacBook Pro turned on",
+    "photographer": "Andras Vas",
+    "source": "https://unsplash.com/photos/macbook-pro-turned-on-Bd7gNnWJBkU",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "microphone",
+    "description": "A vintage silver microphone with blue accents against a soft purple background",
+    "photographer": "Matt Botsford",
+    "source": "https://unsplash.com/photos/vintage-microphone-with-purple-background-OKLqGsCT8qs",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "microwave",
+    "description": "white microwave oven turned off",
+    "photographer": "Erik Mclean",
+    "source": "https://unsplash.com/photos/white-microwave-oven-turned-off-WtxE9xb0vQU",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "monitor",
+    "description": "black flat screen computer monitor beside black computer keyboard",
+    "photographer": "Daniel Eliashevskyi",
+    "source": "https://unsplash.com/photos/black-flat-screen-computer-monitor-beside-black-computer-keyboard-aTg26S0_OC0",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "mouse",
+    "description": "black cordless computer mouse on black surface",
+    "photographer": "Pascal M.",
+    "source": "https://unsplash.com/photos/black-cordless-computer-mouse-on-black-surface-4PchFKrUw84",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "power-bank",
+    "description": "black smartphone and green powerbank close-up photography",
+    "photographer": "I'M ZION",
+    "source": "https://unsplash.com/photos/black-smartphone-and-green-powerbank-close-up-photography-APdfyW0Aq-E",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "power-station",
+    "description": "a table with a cooler and a laptop on it",
+    "photographer": "Zendure Power Station",
+    "source": "https://unsplash.com/photos/a-table-with-a-cooler-and-a-laptop-on-it-d0AOyCUnxec",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "refrigerator",
+    "description": "A refrigerator in a kitchen next to a window",
+    "photographer": "Lisa Anna",
+    "source": "https://unsplash.com/photos/a-refrigerator-in-a-kitchen-next-to-a-window-ZkWMfHPNWpw",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "router",
+    "description": "white router on white table",
+    "photographer": "Compare Fibre",
+    "source": "https://unsplash.com/photos/white-router-on-white-table-hXVVNB6Qctg",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "security-camera",
+    "description": "A tall pole mounted with multiple Panomera surveillance cameras against a grey sky",
+    "photographer": "Milan Malkomes",
+    "source": "https://unsplash.com/photos/surveillance-cameras-on-tall-pole-a40akJxBhT8",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "smart-home",
+    "description": "gray Nest thermostat displaying at 63",
+    "photographer": "Dan LeFebvre",
+    "source": "https://unsplash.com/photos/gray-nest-thermostat-displaying-at-63-RFAHj4tI37Y",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "smart-lock",
+    "description": "gold Apple iPhone smartphone held at the door",
+    "photographer": "Sebastian Scholz (Nuki)",
+    "source": "https://unsplash.com/photos/gold-apple-iphone-smartphone-held-at-the-door-IJkSskfEqrM",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "smart-plug",
+    "description": "two white power adapters on white background",
+    "photographer": "Call Me Fred",
+    "source": "https://unsplash.com/photos/two-white-power-adapters-on-white-background-nBfTARHPxiU",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "solar-panel",
+    "description": "solar panels on green field",
+    "photographer": "American Public Power Association",
+    "source": "https://unsplash.com/photos/solar-panels-on-green-field-513dBrMJ_5w",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "speaker",
+    "description": "black speaker on table",
+    "photographer": "Paul Esch-Laurent",
+    "source": "https://unsplash.com/photos/black-speaker-on-table-YU-OA2TvQRQ",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "storage",
+    "description": "silver and black hard disk drive",
+    "photographer": "Nick",
+    "source": "https://unsplash.com/photos/silver-and-black-hard-disk-drive-VYfxkePredI",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "studio-light",
+    "description": "three green linear leafed plants beside softbox",
+    "photographer": "Krists Luhaers",
+    "source": "https://unsplash.com/photos/three-green-linear-leafed-plants-beside-softbox-YhC216tAYAg",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "tablet",
+    "description": "A person drawing on a tablet with a stylus at a desk",
+    "photographer": "Kelly Sikkema",
+    "source": "https://unsplash.com/photos/person-drawing-on-tablet-at-workspace-Dx1b5ucschA",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "toaster",
+    "description": "A toaster oven sitting on top of a counter",
+    "photographer": "wei",
+    "source": "https://unsplash.com/photos/a-toaster-oven-sitting-on-top-of-a-counter-H0xWU9LdvQY",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "tripod",
+    "description": "grey and black camera tripod",
+    "photographer": "Adnan Ghaffar",
+    "source": "https://unsplash.com/photos/grey-and-black-camera-tripod-I8uQkcQCU8s",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "ups",
+    "description": "a black box sitting on top of a table",
+    "photographer": "Andrey Matveev",
+    "source": "https://unsplash.com/photos/a-black-box-sitting-on-top-of-a-table-vfXpYMzmSew",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "vacuum",
+    "description": "a woman in a green shirt and black gloves vacuuming a gray ottoman",
+    "photographer": "Giorgio Trovato",
+    "source": "https://unsplash.com/photos/a-woman-in-a-green-shirt-and-black-gloves-vacuuming-a-gray-ottoman-5TXz228u4eo",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "washing-machine",
+    "description": "a washer and dryer in a room",
+    "photographer": "PlanetCare",
+    "source": "https://unsplash.com/photos/a-washer-and-dryer-in-a-room-23coWmkTNSg",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "webcam",
+    "description": "black and silver camera on black background",
+    "photographer": "Rebekah Yip",
+    "source": "https://unsplash.com/photos/black-and-silver-camera-on-black-background-VIdQW-1-fI4",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  },
+  {
+    "key": "workspace",
+    "description": "a computer desk with a keyboard, mouse and cell phone",
+    "photographer": "Oakywood",
+    "source": "https://unsplash.com/photos/a-computer-desk-with-a-keyboard-mouse-and-cell-phone-mJaLWCgI1KY",
+    "license": "https://unsplash.com/license",
+    "usage": "Representative demo category photograph, shared across related products. Not an exact SKU."
+  }
+]

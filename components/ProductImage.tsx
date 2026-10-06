@@ -1,51 +1,26 @@
-import type { CSSProperties } from "react";
+import Image from "next/image";
 
-/**
- * Product artwork, rendered as a CSS mask.
- *
- * An SVG loaded through <img src> is an isolated document: nothing the page
- * does can reach inside it. That is why the original artwork had to hardcode
- * its own colours, and why those colours were light-only — a cream background
- * and near-black strokes baked into every file, which rendered as a bright
- * rectangle on a dark surface.
- *
- * As a mask the artwork contributes only its ALPHA, and the visible colour
- * comes from CSS. So the same file renders as dark ink on a light surface and
- * light ink on a dark one, with no second asset and nothing to keep in sync.
- * Shading survives because the artwork varies opacity rather than hue.
- *
- * SVG is skipped deliberately: these files are a few hundred bytes each, and
- * sending them through the image optimizer achieved nothing.
- */
+const photoSlugs = new Set([
+  "adjustable-laptop-stand", "arduino-starter-kit", "compact-mechanical-keyboard",
+  "developer-precision-mouse", "gan-fast-charger", "portable-power-bank",
+  "robot-chassis-motor-bundle", "sensor-exploration-pack", "soldering-prototyping-kit",
+  "studio-monitoring-headphones", "usb-c-8-in-1-hub",
+]);
 
-interface ProductImageProps {
-  src: string;
-  /**
-   * Accessible name. Omit it when the artwork is decorative — in a cart row,
-   * for example, the product name is already the link text and repeating it
-   * would make the line read twice. An omitted name renders `aria-hidden`
-   * rather than an empty `aria-label`, which is the difference between
-   * "unlabelled image" and "no image".
-   */
-  name?: string;
-  className?: string;
-  /** Mask colour; defaults to the theme's ink. */
-  tone?: "ink" | "accent";
+/** Replace only our demo artwork paths; preserve future supplier images. */
+export function productPhotoSource(src: string): string {
+  const match = /^\/images\/products\/([^/]+)\.svg$/.exec(src);
+  return match && photoSlugs.has(match[1]) ? `/images/photography/${match[1]}.webp` : src;
 }
 
-export function ProductImage({
-  src,
-  name,
-  className = "",
-  tone = "ink",
-}: ProductImageProps) {
-  return (
-    <span
-      role={name ? "img" : undefined}
-      aria-label={name || undefined}
-      aria-hidden={name ? undefined : true}
-      className={`product-art product-art--${tone} ${className}`}
-      style={{ "--product-art-src": `url(${src})` } as CSSProperties}
-    />
-  );
+export function ProductImage({ src, name, className = "" }: {
+  src: string; name?: string; className?: string; tone?: "ink" | "accent";
+}) {
+  const photo = productPhotoSource(src);
+  return <span className={`relative block overflow-hidden ${className}`}>
+    <Image src={photo} alt={name ? `${name} — representative product photograph` : ""} fill
+      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
+      className="object-cover transition-transform duration-200 ease-out group-hover:scale-[1.035] motion-reduce:transform-none"
+      unoptimized={photo.endsWith(".svg") || photo.startsWith("http")} />
+  </span>;
 }

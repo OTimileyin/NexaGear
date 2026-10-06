@@ -247,3 +247,21 @@ html.cart-sheet-open {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* NexaGear identity: orange stays the brand accent in both legacy directions. */
+:root[data-theme="apple"] { --color-signal: #c4430f; --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif; }
+:root[data-theme="apple"][data-scheme="dark"] { --color-signal: #ff8a5b; }
+
+html { scroll-padding-top: 6rem; }
+.hero-copy { animation: brand-arrive 650ms cubic-bezier(.2,.7,.2,1) both; }
+.hero-stage { animation: brand-arrive 800ms cubic-bezier(.2,.7,.2,1) both; }
+.hero-photo { animation: brand-photo-settle 1400ms cubic-bezier(.2,.7,.2,1) both; }
+.hero-label { animation: brand-arrive 900ms cubic-bezier(.2,.7,.2,1) both; }
+.motion-reveal { transition: opacity 500ms ease-out, transform 500ms cubic-bezier(.2,.7,.2,1); }
+.reveal-waiting { opacity: 0; transform: translateY(24px); }
+@keyframes brand-arrive { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes brand-photo-settle { from { transform: scale(1.06); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy, .hero-stage, .hero-photo, .hero-label { animation: none; }
+  .motion-reveal, .reveal-waiting { opacity: 1; transform: none; transition: none; }
+}

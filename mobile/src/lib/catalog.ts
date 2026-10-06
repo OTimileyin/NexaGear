@@ -5,6 +5,7 @@ import type { Product } from "./types.ts";
 interface ProductRow {
   id: string;
   name: string;
+  description: string;
   sku: string;
   slug: string;
   category: string;
@@ -22,7 +23,7 @@ interface ProductRow {
 export async function fetchProducts(supabase: SupabaseClient): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
-    .select("id, name, sku, slug, category, price, image_url, inventory_status")
+    .select("id, name, description, sku, slug, category, price, image_url, inventory_status")
     .order("name", { ascending: true });
 
   if (error) throw error;
@@ -30,6 +31,7 @@ export async function fetchProducts(supabase: SupabaseClient): Promise<Product[]
   return ((data ?? []) as ProductRow[]).map((row) => ({
     id: row.id,
     name: row.name,
+    description: row.description,
     sku: row.sku,
     slug: row.slug,
     category: row.category,

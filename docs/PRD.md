@@ -10,6 +10,12 @@
 
 # 1. Product Concept
 
+**Owner amendment, 2026-10-05 (D39):** The website includes a dedicated landing page with brief, reduced-motion-aware animation, a consistent NexaGear identity, simplified navigation and real representative photographs. Demo photos must be disclosed as representative until exact supplier images are available. This supersedes earlier visual comparison controls and monochrome image treatments.
+
+**Owner amendment, 2026-10-05 (D41):** Mobile opens with a brief skippable, reduced-motion-aware brand introduction before sign-in/account creation; authenticated users enter the actual catalogue. Both clients follow the device appearance by default, with saved Auto/Light/Dark overrides in the website header and mobile Settings. Mobile collects delivery details, opens secure Paystack payment and displays the server-verified result inside the app. It uses the existing server-priced order flow instead of sending shoppers to the deployed website. All monetary displays and product metadata use NGN; existing demo database amounts are retained without exchange-rate conversion.
+
+**Owner amendment, 2026-10-05 (D42):** Use the supplied shopping-app screenshots as structural references for a search-led two-column catalogue, category sidebar, Home/Categories/Account/Cart navigation and account/settings pages, retaining NexaGear branding. Add exactly 100 demo products spanning content creation, developer gadgets and home appliances, with indicative NGN prices and credited representative photos. Allow guest browsing after the introduction; account cart writes, orders and checkout still require authentication. Expose existing configured Google and email authentication. Do not invent discounts, sales counts, reviews, free shipping, returns guarantees, coupons or advertising-cookie consent.
+
 NexaGear is a modern e-commerce shop for developers, makers, electronics learners, robotics enthusiasts, and people building productive technology workspaces.
 
 The store focuses on practical products such as:

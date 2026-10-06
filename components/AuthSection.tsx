@@ -42,7 +42,7 @@ export function AuthSection() {
     return (
       <div className="flex items-center gap-3">
         <span
-          className="hidden max-w-[16ch] truncate font-mono text-xs text-steel sm:inline"
+          className="sr-only"
           title={email}
         >
           {email}

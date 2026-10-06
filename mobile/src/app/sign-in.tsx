@@ -1,5 +1,6 @@
-import { useAuth, useSignIn, useSignUp } from "@clerk/expo";
-import { type Href, useRouter } from "expo-router";
+import { useAuth, useSignIn, useSignUp, useSSO } from "@clerk/expo";
+import * as Linking from "expo-linking";
+import { type Href, useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -14,27 +15,18 @@ import {
 import { Button, Screen } from "../components/ui.tsx";
 import { describeAuthError } from "../lib/clerk-errors.ts";
 import { useTheme } from "../lib/theme.ts";
+import { useBrowse } from "../lib/browse-context.tsx";
 
-/**
- * Sign-in and sign-up, built from Clerk's hooks rather than a hosted page.
- *
- * This is the "custom flow" approach, and the reason is the demo: email +
- * password needs **no redirect URI, no browser session and no OAuth client
- * registration**, so the same credentials work on the website and the phone
- * with nothing configured in between. Hosted authentication would send the
- * shopper to a browser and back through a deep link, which is the classic way
- * an evening disappears.
- *
- * The instance requires a username at sign-up, so the sign-up form asks for one
- * — a form that omits it would fail with a server-side complaint the shopper
- * cannot act on.
- */
+/** Native Clerk flow: email-code sign-in, password and email verification at sign-up. */
 export default function SignInScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { signIn } = useSignIn();
   const { signUp } = useSignUp();
+  const { startSSOFlow } = useSSO();
   const { isSignedIn } = useAuth();
+  const { entered } = useBrowse();
+  const params = useLocalSearchParams<{ mode?: string }>();
 
   /**
    * Leaving is idempotent. Two things can finish a sign-in — Clerk's own
@@ -43,7 +35,7 @@ export default function SignInScreen() {
    */
   const left = useRef(false);
 
-  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
+  const [mode, setMode] = useState<"sign-in" | "sign-up">(params.mode === "sign-up" ? "sign-up" : "sign-in");
   const [verifying, setVerifying] = useState(false);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -55,8 +47,7 @@ export default function SignInScreen() {
   function leave() {
     if (left.current) return;
     left.current = true;
-    if (router.canGoBack()) router.back();
-    else router.replace("/" as Href);
+    router.replace("/" as Href);
   }
 
   // A sign-in that completes without Clerk asking for a redirect still has to
@@ -70,31 +61,15 @@ export default function SignInScreen() {
     setBusy(true);
     setError(null);
     try {
-      const { error: attemptError } = await signIn.password({
+      const { error: attemptError } = await signIn.emailCode.sendCode({
         emailAddress: email.trim(),
-        password,
       });
       if (attemptError) {
         setError(describeAuthError(attemptError));
         return;
       }
-      if (signIn.status !== "complete") {
-        // Honest about the limit rather than spinning: this app does not
-        // implement second factors, and the website does.
-        setError(
-          `This account needs another step before it can sign in here (${signIn.status}). Sign in on the website, which supports it, or ask for the account details to be simplified.`,
-        );
-        return;
-      }
-      const { error: finalizeError } = await signIn.finalize({
-        navigate: () => leave(),
-      });
-      if (finalizeError) {
-        setError(describeAuthError(finalizeError));
-        return;
-      }
-      leave();
-      return;
+      setCode("");
+      setVerifying(true);
     } catch (cause) {
       setError(describeAuthError(cause));
     } finally {
@@ -132,14 +107,19 @@ export default function SignInScreen() {
     setBusy(true);
     setError(null);
     try {
-      const { error: verifyError } = await signUp.verifications.verifyEmailCode({
-        code: code.trim(),
-      });
+      const { error: verifyError } = mode === "sign-in"
+        ? await signIn.emailCode.verifyCode({ code: code.trim() })
+        : await signUp.verifications.verifyEmailCode({ code: code.trim() });
       if (verifyError) {
         setError(describeAuthError(verifyError));
         return;
       }
-      const { error: finalizeError } = await signUp.finalize();
+      const attempt = mode === "sign-in" ? signIn : signUp;
+      if (attempt.status !== "complete") {
+        setError("This account requires another verification step. Complete sign-in on the website to continue there.");
+        return;
+      }
+      const { error: finalizeError } = await attempt.finalize();
       if (finalizeError) {
         setError(describeAuthError(finalizeError));
         return;
@@ -186,9 +166,27 @@ export default function SignInScreen() {
                 autoComplete="one-time-code"
               />
               <Button label="Verify and finish" onPress={handleVerify} busy={busy} />
+              <Button
+                tone="quiet"
+                label="Back to email"
+                busy={busy}
+                onPress={() => {
+                  setVerifying(false);
+                  setCode("");
+                  setError(null);
+                }}
+              />
             </>
           ) : (
             <>
+              <Button tone="quiet" label="Continue with Google" disabled={busy} onPress={() => {
+                setBusy(true); setError(null);
+                void startSSOFlow({ strategy: "oauth_google", redirectUrl: Linking.createURL("/") }).then(async result => {
+                  if (result.createdSessionId && result.setActive) { await result.setActive({ session: result.createdSessionId }); leave(); }
+                  else if (result.authSessionResult?.type !== "cancel" && result.authSessionResult?.type !== "dismiss") setError("Google sign-in needs another step. Continue with email to finish creating your account.");
+                }).catch(cause => setError(describeAuthError(cause))).finally(() => setBusy(false));
+              }} />
+              <Text style={{ color: theme.steel, textAlign: "center" }}>or continue with email</Text>
               <Field
                 label="Email"
                 value={email}
@@ -206,23 +204,24 @@ export default function SignInScreen() {
                   autoComplete="username-new"
                 />
               ) : null}
-              <Field
+              {mode === "sign-up" ? <Field
                 label="Password"
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Your password"
                 secureTextEntry
-                autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-              />
+                autoComplete="new-password"
+              /> : null}
 
               <Button
-                label={mode === "sign-in" ? "Sign in" : "Create account"}
+                label={mode === "sign-in" ? "Send sign-in code" : "Create account"}
                 busy={busy}
                 onPress={mode === "sign-in" ? handleSignIn : handleSignUp}
               />
 
               <Button
                 tone="quiet"
+                disabled={busy}
                 label={
                   mode === "sign-in"
                     ? "New here? Create an account"
@@ -238,7 +237,7 @@ export default function SignInScreen() {
                   CAPTCHA on iOS and Android. */}
               <View nativeID="clerk-captcha" />
 
-              <Button tone="quiet" label="Back to the shop" onPress={leave} />
+              <Button tone="quiet" label={entered ? "Back to the shop" : "Back to introduction"} disabled={busy} onPress={() => router.replace((entered ? "/" : "/welcome") as Href)} />
             </>
           )}
         </ScrollView>

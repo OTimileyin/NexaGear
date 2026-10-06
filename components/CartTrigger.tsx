@@ -26,7 +26,7 @@ export function CartTrigger() {
       onClick={() => open(ref.current)}
       aria-expanded={isOpen}
       aria-controls="cart-sheet"
-      className="flex items-center font-mono hover:text-drafting apple:font-sans"
+      className="flex min-h-11 items-center gap-1 font-medium hover:text-signal"
     >
       Cart
       <CartCount />
