@@ -34,6 +34,6 @@ Automated evidence is generated with `node scripts/audit-mobile-flow.mjs` and `n
 
 ## Android APK cloud build ? 2026-10-05
 
-Owner authorized a standalone Android APK. Submitted EAS preview build `54f8d190-6f40-49cc-b5ea-710e6464496e`; last observed status IN_QUEUE, not yet an available APK. Build page: https://expo.dev/accounts/agenttim/projects/nexagear-mobile/builds/54f8d190-6f40-49cc-b5ea-710e6464496e .
+The first build failed after losing its worker connection. The retry `8208b5b2-f1e5-4bc4-a55b-1d65b640ee5c` was checked on 2026-10-06 and is FINISHED. [Download the Android APK](https://expo.dev/artifacts/eas/UObnJmPyLlu7XY_CJ_mNe6zgrreiCGojXeh6Frbncqs.apk). [Build details](https://expo.dev/accounts/agenttim/projects/nexagear-mobile/builds/8208b5b2-f1e5-4bc4-a55b-1d65b640ee5c).
 
-The preview profile uses https://nexagear.vercel.app as EXPO_PUBLIC_API_URL and the three public Supabase/Clerk keys from the EAS preview environment. Existing remote Android keystore retained. Source archive includes uncommitted local changes; no commit or push performed. Mobile cart tests pass (13/13). Install, auth, payment-return and device behavior remain unverified until the APK finishes and is tested.
+The preview profile uses https://nexagear.vercel.app as EXPO_PUBLIC_API_URL and the three public Supabase/Clerk keys from the EAS preview environment. Existing remote Android keystore retained. The archive was uploaded before the transfer commit. Mobile cart tests pass (13/13). Installation, authentication, payment return and device behavior remain unverified until tested on a physical phone.

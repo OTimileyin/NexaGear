@@ -506,3 +506,12 @@ phone, create the demo account (email + password + username — see
 - [ ] IMPLEMENTED / UNVERIFIED: signed-in empty cart, order history and physical-phone authentication/payment journey. Browser cart capture uses the honest guest state without fabricating a session.
 
 - [x] verified: Vercel production deployment READY, aliased to https://nexagear.vercel.app. Deployment dpl_DcKTbVfEPozSZkd9ghPyJUuS4bNW includes all four mobile API routes; root-anchored upload exclusions preserve app/api/mobile. Live landing page, 111-product shop, search and local-photo URL were exercised. No Git commit/push performed.
+
+## Original-computer setup - 2026-10-06
+
+- [x] verified: expected transfer commit `23206d27d1e0f1b4e7cca2bc2346ce3abfa7619e` present on main; fetched remote matched before setup. Existing local configuration preserved; missing Paystack test key restored from authorized local configuration. Website origin set to localhost:3000 and mobile public keys aligned. Both environment files and Vercel metadata remain ignored.
+- [x] verified: root and mobile npm ci succeeded with existing lockfiles. Root lint, both TypeScript checks, Next.js build, 220 root tests and 13 mobile tests pass. Initial parallel root test run hit worker startup timeouts; rerun with two workers passed. Built-client secret scan passed across 24 files.
+- [x] verified: local website and Expo LAN servers started; ten storefront scans, nine mobile flow checks and 24 compact screen captures passed. Android launch bundle returned HTTP 200 with src/app routes, product grid and search. Evidence remains in ignored test-results directories.
+- [x] verified: read-only catalogue check returned 111 records and zero pending expansion rows; no database changes needed. EAS APK retry is FINISHED; download and build links are documented in docs/MOBILE_TESTING.md.
+- [ ] REMAINING: npm ci audit reported five high findings for the root and 31 mobile findings (10 moderate, 21 high). Dependency remediation requires separate review; no versions changed during transfer.
+- [ ] IMPLEMENTED / UNVERIFIED: physical-phone installation, Clerk/Google authentication completion, native payment return and two-device cart synchronization. Browser checks do not verify these provider/device flows.
